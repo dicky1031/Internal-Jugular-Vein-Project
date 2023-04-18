@@ -1,4 +1,3 @@
-
 from glob import glob
 import os
 import json

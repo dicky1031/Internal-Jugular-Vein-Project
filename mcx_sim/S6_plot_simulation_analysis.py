@@ -3,8 +3,15 @@ from glob import glob
 import matplotlib.pyplot as plt
 import numpy as np
 import json
+import sys
+# %% move to current file path
+os.chdir(sys.path[0])
 
-folder = "ctchen_1e9_ijv_large_to_small"
+result_folder = 'ctchen'
+subject = 'ctchen'
+ijv_type = 'large_to_small'
+
+folder = f"{subject}_ijv_large_to_small"
 mus_start = 1
 mus_end = 1225
 used_photon = 1e9
