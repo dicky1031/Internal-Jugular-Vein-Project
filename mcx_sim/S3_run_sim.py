@@ -80,12 +80,12 @@ def run_mcx(result_folder, subject, mus_start, mus_end, NA_enable, NA, runningNu
             print(
                 f"Session name: {sessionID} \n Reflectance mean: {mean} \nCV: {CV} ", end="\n\n")
             # remove file
-            remove_list = glob(os.path.join(
-                config["OutputPath"], session, "mcx_output", "*.jdat"))
-            remove_list.sort(key=lambda x: int(x.split("_")[-2]))
-            remove_list = remove_list[1:]
-            for idx in range(len(remove_list)):
-                os.remove(remove_list[idx])
+            # remove_list = glob(os.path.join(
+            #     config["OutputPath"], session, "mcx_output", "*.jdat"))
+            # remove_list.sort(key=lambda x: int(x.split("_")[-2]))
+            # remove_list = remove_list[1:]
+            # for idx in range(len(remove_list)):
+            #     os.remove(remove_list[idx])
 
         else:
             # run stage1 : run N sims to precalculate CV

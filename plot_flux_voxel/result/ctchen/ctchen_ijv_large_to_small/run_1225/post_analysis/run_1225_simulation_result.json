@@ -1,0 +1,151 @@
+{
+    "SessionID:": "run_1225",
+    "RawSampleNum": 1,
+    "AnalyzedSampleNum": 1,
+    "GroupingNum": 0,
+    "PhotonNum": {
+        "RawSample": "300000000.0",
+        "GroupingSample": 0
+    },
+    "GroupingSampleValues": {
+        "sds_0": [
+            2.9832408036140243e-06
+        ],
+        "sds_1": [
+            2.684446718174188e-06
+        ],
+        "sds_2": [
+            2.817366498020389e-06
+        ],
+        "sds_3": [
+            2.608554366479862e-06
+        ],
+        "sds_4": [
+            0.0
+        ],
+        "sds_5": [
+            0.0
+        ],
+        "sds_6": [
+            0.0
+        ],
+        "sds_7": [
+            0.0
+        ],
+        "sds_8": [
+            0.0
+        ],
+        "sds_9": [
+            0.0
+        ],
+        "sds_10": [
+            0.0
+        ],
+        "sds_11": [
+            4.0977337634689516e-07
+        ],
+        "sds_12": [
+            2.0172058785590514e-07
+        ],
+        "sds_13": [
+            2.484881846885039e-07
+        ],
+        "sds_14": [
+            0.0
+        ],
+        "sds_15": [
+            0.0
+        ],
+        "sds_16": [
+            0.0
+        ],
+        "sds_17": [
+            0.0
+        ],
+        "sds_18": [
+            0.0
+        ],
+        "sds_19": [
+            0.0
+        ],
+        "sds_20": [
+            0.0
+        ]
+    },
+    "GroupingSampleStd": {
+        "sds_0": 0.0,
+        "sds_1": 0.0,
+        "sds_2": 0.0,
+        "sds_3": 0.0,
+        "sds_4": 0.0,
+        "sds_5": 0.0,
+        "sds_6": 0.0,
+        "sds_7": 0.0,
+        "sds_8": 0.0,
+        "sds_9": 0.0,
+        "sds_10": 0.0,
+        "sds_11": 0.0,
+        "sds_12": 0.0,
+        "sds_13": 0.0,
+        "sds_14": 0.0,
+        "sds_15": 0.0,
+        "sds_16": 0.0,
+        "sds_17": 0.0,
+        "sds_18": 0.0,
+        "sds_19": 0.0,
+        "sds_20": 0.0
+    },
+    "GroupingSampleMean": {
+        "sds_0": 2.9832408036140243e-06,
+        "sds_1": 2.684446718174188e-06,
+        "sds_2": 2.817366498020389e-06,
+        "sds_3": 2.608554366479862e-06,
+        "sds_4": 0.0,
+        "sds_5": 0.0,
+        "sds_6": 0.0,
+        "sds_7": 0.0,
+        "sds_8": 0.0,
+        "sds_9": 0.0,
+        "sds_10": 0.0,
+        "sds_11": 4.0977337634689516e-07,
+        "sds_12": 2.0172058785590514e-07,
+        "sds_13": 2.484881846885039e-07,
+        "sds_14": 0.0,
+        "sds_15": 0.0,
+        "sds_16": 0.0,
+        "sds_17": 0.0,
+        "sds_18": 0.0,
+        "sds_19": 0.0,
+        "sds_20": 0.0
+    },
+    "GroupingSampleCV": {
+        "sds_0": 0.0,
+        "sds_1": 0.0,
+        "sds_2": 0.0,
+        "sds_3": 0.0,
+        "sds_4": NaN,
+        "sds_5": NaN,
+        "sds_6": NaN,
+        "sds_7": NaN,
+        "sds_8": NaN,
+        "sds_9": NaN,
+        "sds_10": NaN,
+        "sds_11": 0.0,
+        "sds_12": 0.0,
+        "sds_13": 0.0,
+        "sds_14": NaN,
+        "sds_15": NaN,
+        "sds_16": NaN,
+        "sds_17": NaN,
+        "sds_18": NaN,
+        "sds_19": NaN,
+        "sds_20": NaN
+    },
+    "MovingAverageGroupingSampleValues": null,
+    "MovingAverageGroupingSampleStd": null,
+    "MovingAverageGroupingSampleMean": null,
+    "MovingAverageGroupingSampleCV": {
+        "sds_0": 1000,
+        "sds_1": 1000
+    }
+}

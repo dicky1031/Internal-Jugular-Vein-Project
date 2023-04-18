@@ -1,0 +1,14 @@
+{
+    "SessionID": "run_911",
+    "Type": "ctchen_ijv_large_to_small",
+    "PhotonNum": 300000000.0,
+    "VoxelSize": 0.25,
+    "BinaryPath": "d:\\ijv_code_organized\\Internal-Jugular-Vein-Project\\plot_flux_voxel\\bin",
+    "VolumePath": "d:\\ijv_code_organized\\Internal-Jugular-Vein-Project\\plot_flux_voxel\\ultrasound_image_processing\\ctchen_perturbed_small_to_large.npy",
+    "MCXInputPath": "d:\\ijv_code_organized\\Internal-Jugular-Vein-Project\\plot_flux_voxel\\result\\ctchen\\ctchen_ijv_large_to_small\\run_911\\ijv_dense_symmetric_detectors_backgroundfiber_pmc.json",
+    "OutputPath": "d:\\ijv_code_organized\\Internal-Jugular-Vein-Project\\plot_flux_voxel\\result\\ctchen\\ctchen_ijv_large_to_small",
+    "DetectorNA": 0.22,
+    "CustomizedCommands": [
+        "--savedetflag DSPXV --seed -1 --outputformat jnii"
+    ]
+}

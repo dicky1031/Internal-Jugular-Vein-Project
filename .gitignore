@@ -217,4 +217,8 @@ $RECYCLE.BIN/
 # result simulation file
 mcx_sim/result/ctchen/*ijv*
 
+# avoid upload .jnii .jdat
+*.jnii
+*.jdat
+
 # End of https://www.toptal.com/developers/gitignore/api/python,windows,git
