@@ -214,8 +214,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# result simulation file
-mcx_sim/result/ctchen/*ijv*
 
 # avoid upload .jnii .jdat
 *.jnii
