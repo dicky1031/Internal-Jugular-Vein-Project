@@ -1,3 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct 22 17:03:27 2021
+
+@author: md703
+"""
+
+
+from IPython import get_ipython
+get_ipython().magic('clear')
+get_ipython().magic('reset -f')
 import numpy as np
 import scipy.io as sio
 import cv2
@@ -24,11 +36,10 @@ gridNumIn10mm = int(10/voxelLength)
 
 # %% main
 # plot original image
-image = cv2.imread("{}_{}_{}.png".format(
-    subject, date, state), cv2.IMREAD_GRAYSCALE)
+image = cv2.imread("{}_{}_{}.png".format(subject, date, state), cv2.IMREAD_GRAYSCALE)
 plt.imshow(image, cmap="gray")
-plt.hlines(15, 0, 400, color="red")  # upperbound
-plt.hlines(700, 0, 400, color="red")  # lowerbound
+plt.hlines(15,0,400,color="red")  # upperbound
+plt.hlines(700,0,400,color="red")  # lowerbound
 plt.plot()
 plt.colorbar()
 plt.title("original")
@@ -69,14 +80,12 @@ for idx, tissue in enumerate(tissueSet):
             plt.plot(y, edge, c="r")
     if tissue == "cca":
         angles = np.linspace(0, 2*np.pi, num=100)
-        x = paramSet[tissue]["v"][2] * \
-            np.cos(angles) + paramSet[tissue]["v"][0]
-        y = paramSet[tissue]["v"][2] * \
-            np.sin(angles) + paramSet[tissue]["v"][1]
+        x = paramSet[tissue]["v"][2] * np.cos(angles) + paramSet[tissue]["v"][0]
+        y = paramSet[tissue]["v"][2] * np.sin(angles) + paramSet[tissue]["v"][1]
         plt.plot(x, y, c="r")
     plt.title("({}) potential {} area".format(state, tissue))
     plt.show()
-
+     
     if tissue == "ijv" or tissue == "cca":
         # highlight and catch target tissue
         plt.imshow(image, cmap="gray")
@@ -87,33 +96,25 @@ for idx, tissue in enumerate(tissueSet):
                 plt.plot(y, edge, c="r")
         if tissue == "cca":
             angles = np.linspace(0, 2*np.pi, num=100)
-            x = paramSet[tissue]["v"][2] * \
-                np.cos(angles) + paramSet[tissue]["v"][0]
-            y = paramSet[tissue]["v"][2] * \
-                np.sin(angles) + paramSet[tissue]["v"][1]
+            x = paramSet[tissue]["v"][2] * np.cos(angles) + paramSet[tissue]["v"][0]
+            y = paramSet[tissue]["v"][2] * np.sin(angles) + paramSet[tissue]["v"][1]
             plt.plot(x, y, c="r")
         # mesh coordinate
-        coordinates = np.meshgrid(
-            np.arange(image.shape[0]), np.flip(np.arange(image.shape[1])))
-        # add dummy coordinate
-        coordinates = np.insert(coordinates, 0, 1, axis=0)
+        coordinates = np.meshgrid(np.arange(image.shape[0]), np.flip(np.arange(image.shape[1])))
+        coordinates = np.insert(coordinates, 0, 1, axis=0)  # add dummy coordinate
         # sketch potential region
         targetMatch = np.ones((image.shape[1], image.shape[0]), dtype=bool)
         # match line
         if tissue == "ijv":
             for vector in np.array(paramSet[tissue]["v"]):
                 if vector[0] == -1:
-                    targetMatch = targetMatch & (
-                        (vector.reshape(-1, 1, 1)[1:] * coordinates).sum(axis=0) < 0)
+                    targetMatch = targetMatch & ((vector.reshape(-1, 1, 1)[1:] * coordinates).sum(axis=0) < 0)
                 if vector[0] == 1:
-                    targetMatch = targetMatch & (
-                        (vector.reshape(-1, 1, 1)[1:] * coordinates).sum(axis=0) > 0)
+                    targetMatch = targetMatch & ((vector.reshape(-1, 1, 1)[1:] * coordinates).sum(axis=0) > 0)
             # match blood
-            targetMatch = targetMatch & (
-                np.rot90(image[:image.shape[0], :image.shape[1]]) < bloodThold)
+            targetMatch = targetMatch & (np.rot90(image[:image.shape[0], :image.shape[1]]) < bloodThold)
         if tissue == "cca":
-            targetMatch = targetMatch & ((coordinates[1]-paramSet[tissue]["v"][1])**2 + (
-                coordinates[2]-paramSet[tissue]["v"][0])**2 <= paramSet[tissue]["v"][2]**2)
+            targetMatch = targetMatch & ((coordinates[1]-paramSet[tissue]["v"][1])**2 + (coordinates[2]-paramSet[tissue]["v"][0])**2 <= paramSet[tissue]["v"][2]**2)
         # plot image (before scale)
         legalRow, legalCol = np.where(targetMatch == True)
         legalRow = targetMatch.shape[0]-legalRow
@@ -121,14 +122,12 @@ for idx, tissue in enumerate(tissueSet):
         plt.plot(legalRow, legalCol, "r.", markersize=3)
         plt.title("catch {} (before scale)".format(tissue))
         plt.show()
-
+        
         # plot image (after scale)
         scalePercentage = gridNumIn10mm / (length10mmEdge[1]-length10mmEdge[0])
-        newImage = cv2.resize(image, (int(np.round(image.shape[1]*scalePercentage)), int(
-            np.round(image.shape[0]*scalePercentage))), interpolation=cv2.INTER_AREA)
+        newImage = cv2.resize(image, (int(np.round(image.shape[1]*scalePercentage)), int(np.round(image.shape[0]*scalePercentage))), interpolation=cv2.INTER_AREA)
         targetMatch = targetMatch.astype(float)
-        targetMatch = cv2.resize(targetMatch, (int(np.round(targetMatch.shape[1]*scalePercentage)), int(
-            np.round(targetMatch.shape[0]*scalePercentage))), interpolation=cv2.INTER_AREA)
+        targetMatch = cv2.resize(targetMatch, (int(np.round(targetMatch.shape[1]*scalePercentage)), int(np.round(targetMatch.shape[0]*scalePercentage))), interpolation=cv2.INTER_AREA)
         targetMatch = targetMatch.astype(bool)
         legalRow, legalCol = np.where(targetMatch == True)
         legalRow = targetMatch.shape[0]-legalRow
@@ -141,18 +140,17 @@ for idx, tissue in enumerate(tissueSet):
         plt.plot(legalRow, legalCol, "r.", markersize=3)
         plt.title("catch {} (after scale)".format(tissue))
         plt.show()
-
+        
         legalRowSet[tissue] = legalRow
         legalColSet[tissue] = legalCol
 
 
 # %% make volume
 def convertUnit(length, voxelSize=voxelLength):
-    numGrid = length / voxelSize
-    return numGrid
+        numGrid = length / voxelSize
+        return numGrid
 
-
-# related size [mm]
+### related size [mm]
 # model
 modelX = convertUnit(132)
 modelY = convertUnit(38)
@@ -172,42 +170,38 @@ prismZ = convertUnit(5)
 # 0.3675
 fiberR = convertUnit(0.3675)
 
-# start to construct
+### start to construct
 # model and air (in the beginning)
 vol = np.ones((int(modelX), int(modelY), int(modelZ)))
 # source
-vol[int(modelX//2-srcHolderX//2):int(modelX//2+srcHolderX//2),
+vol[int(modelX//2-srcHolderX//2):int(modelX//2+srcHolderX//2), 
     int(modelY//2-srcHolderY//2):int(modelY//2+srcHolderY//2),
     :int(srcHolderZ)] = 2  # holder
 for x in range(int(modelX//2)-int(np.ceil(irraWinRadius)), int(modelX//2)+int(np.ceil(irraWinRadius))):
     for y in range(int(modelY//2)-int(np.ceil(irraWinRadius)), int(modelY//2)+int(np.ceil(irraWinRadius))):
-        isDist1 = np.sqrt((modelX//2-x)**2 + (modelY//2-y)
-                          ** 2) < np.ceil(irraWinRadius)
-        isDist2 = np.sqrt((modelX//2-(x+1))**2 + (modelY//2-y)
-                          ** 2) < np.ceil(irraWinRadius)
-        isDist3 = np.sqrt((modelX//2-x)**2 + (modelY//2-(y+1))
-                          ** 2) < np.ceil(irraWinRadius)
-        isDist4 = np.sqrt((modelX//2-(x+1))**2 +
-                          (modelY//2-(y+1))**2) < np.ceil(irraWinRadius)
+        isDist1 = np.sqrt((modelX//2-x)**2 + (modelY//2-y)**2) < np.ceil(irraWinRadius)
+        isDist2 = np.sqrt((modelX//2-(x+1))**2 + (modelY//2-y)**2) < np.ceil(irraWinRadius)
+        isDist3 = np.sqrt((modelX//2-x)**2 + (modelY//2-(y+1))**2) < np.ceil(irraWinRadius)
+        isDist4 = np.sqrt((modelX//2-(x+1))**2 + (modelY//2-(y+1))**2) < np.ceil(irraWinRadius)
         if isDist1 or isDist2 or isDist3 or isDist4:
             vol[x][y] = 1  # air
 # detector
-vol[int(modelX//2+srcHolderX//2):int(modelX//2+srcHolderX//2+detHolderX),
+vol[int(modelX//2+srcHolderX//2):int(modelX//2+srcHolderX//2+detHolderX), 
     int(modelY//2-detHolderY//2):int(modelY//2+detHolderY//2),
     :int(detHolderZ)] = 2  # first holder
-vol[int(modelX//2-srcHolderX//2-detHolderX):int(modelX//2-srcHolderX//2),
+vol[int(modelX//2-srcHolderX//2-detHolderX):int(modelX//2-srcHolderX//2), 
     int(modelY//2-detHolderY//2):int(modelY//2+detHolderY//2),
     :int(detHolderZ)] = 2  # second holder
-vol[int(modelX//2+srcHolderX//2):int(modelX//2+srcHolderX//2+detHolderX),
+vol[int(modelX//2+srcHolderX//2):int(modelX//2+srcHolderX//2+detHolderX), 
     int(modelY//2-prismY//2):int(modelY//2+prismY//2),
     int(detHolderZ-prismZ):int(detHolderZ)] = 3  # first prism
-vol[int(modelX//2-srcHolderX//2-detHolderX):int(modelX//2-srcHolderX//2),
+vol[int(modelX//2-srcHolderX//2-detHolderX):int(modelX//2-srcHolderX//2), 
     int(modelY//2-prismY//2):int(modelY//2+prismY//2),
     int(detHolderZ-prismZ):int(detHolderZ)] = 3  # second prism
-vol[int(modelX//2+srcHolderX//2):int(modelX//2+srcHolderX//2+detHolderX),
+vol[int(modelX//2+srcHolderX//2):int(modelX//2+srcHolderX//2+detHolderX), 
     int(modelY//2-prismY//2):int(modelY//2+prismY//2),
     :int(detHolderZ-prismZ)] = 0  # first fiber
-vol[int(modelX//2-srcHolderX//2-detHolderX):int(modelX//2-srcHolderX//2),
+vol[int(modelX//2-srcHolderX//2-detHolderX):int(modelX//2-srcHolderX//2), 
     int(modelY//2-prismY//2):int(modelY//2+prismY//2),
     :int(detHolderZ-prismZ)] = 0  # second fiber
 # fiberCenterX = int(modelX//2+srcHolderX//2+detHolderX//2)
@@ -231,20 +225,16 @@ vol[:, :, int(detHolderZ):int(detHolderZ)+skinDepth] = 4
 # %% Can add perturbed region
 # ijv  # 7 for perturbed region
 shiftNumber = np.round(modelY//2 - np.mean(legalRowSet["ijv"]), 0).astype(int)
-vol[:, np.array(legalRowSet["ijv"])+shiftNumber, np.array(legalColSet["ijv"]
-                                                          )+int(detHolderZ)] = 7 if state == "IJVLarge" else 8
+vol[:, np.array(legalRowSet["ijv"])+shiftNumber, np.array(legalColSet["ijv"])+int(detHolderZ)] = 7 if state == "IJVLarge" else 8    
 # cca
 if state == "IJVSmall":
     y = np.load(f"{subject}_CCA_y.npy")
     z = np.load(f"{subject}_CCA_z.npy")
     vol[:, y, z] = 9
 if state == "IJVLarge":
-    vol[:, np.array(legalRowSet["cca"])+shiftNumber,
-        np.array(legalColSet["cca"])+int(detHolderZ)-4] = 9
-    np.save(file=f"{subject}_CCA_y", arr=np.array(
-        legalRowSet["cca"])+shiftNumber)
-    np.save(file=f"{subject}_CCA_z", arr=np.array(
-        legalColSet["cca"])+int(detHolderZ)-4)
+    vol[:, np.array(legalRowSet["cca"])+shiftNumber, np.array(legalColSet["cca"])+int(detHolderZ)-4] = 9
+    np.save(file=f"{subject}_CCA_y",arr = np.array(legalRowSet["cca"])+shiftNumber )
+    np.save(file=f"{subject}_CCA_z",arr = np.array(legalColSet["cca"])+int(detHolderZ)-4 )
 # vol[:, 78, 62] = 7  # fill the hole
 plt.imshow(vol[int(modelX//2), :, :])
 plt.show()
@@ -263,22 +253,22 @@ else:
     np.save(file=f"{subject}_perturbed_large", arr=vol)
 
 
+
 # # find perturbed region # 7 for perturbed region
 # small to large
 small = np.load("ctchen_perturbed_small.npy")
 large = np.load("ctchen_perturbed_large.npy")
-# large==7 --> large IJV(small muscle) , small==6 --> small muscle (large IJV)
-a = np.where((large == 7) & (small == 6))
-aa = np.where(small == 8)  # small IJV
+a = np.where((large==7) &(small==6)) # large==7 --> large IJV(small muscle) , small==6 --> small muscle (large IJV)
+aa = np.where(small==8) # small IJV
 b = []
 c = []
-for i in range(0, len(a[0])):
-    b.append(small[a[0][i], a[1][i], a[2][i]])  # 66666....
-    c.append(large[a[0][i], a[1][i], a[2][i]])  # 77777....
+for i in range(0,len(a[0])):
+    b.append(small[a[0][i],a[1][i],a[2][i]]) #66666....
+    c.append(large[a[0][i],a[1][i],a[2][i]]) #77777....  
 d = np.copy(small)
-for i in range(0, len(a[0])):
-    d[a[0][i], a[1][i], a[2][i]] = 7
-
+for i in range(0,len(a[0])):
+    d[a[0][i],a[1][i],a[2][i]] = 7
+    
 plt.imshow(d[int(528//2), :, :].T)
 plt.show()
 np.save(file="ctchen_perturbed_small_to_large", arr=d)
@@ -286,3 +276,8 @@ np.save(file="ctchen_perturbed_small_to_large", arr=d)
 
 # sio.savemat('testIJV.mat', {'testIJV': vol})
 # sio.savemat('testIJV.mat', {'testIJV': vol[:, :, :int(detHolderZ)]})
+
+
+
+
+
