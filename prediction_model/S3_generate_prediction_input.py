@@ -19,6 +19,7 @@ with open(os.path.join("OPs_used", "SO2.json"), 'r') as f:
 #%%
 def gen_prediction_input(num : int, train_or_test: str, SO2_used : list):
     for id in range(num):
+        print(f'now processing {train_or_test}_{id}...')
         for blc in bloodConc:
             prediction_input = np.empty((len(SO2_used),4*len(wavelength)+3)) # T1_large_SDS1/SDS2 T1_small_SDS1/SDS2 T2_large_SDS1/SDS2 T2_small_SDS1/SDS2 bloodConc ans id
             for i, s in enumerate(SO2_used):
@@ -36,9 +37,12 @@ def gen_prediction_input(num : int, train_or_test: str, SO2_used : list):
             np.save(os.path.join("dataset", "prediction_result", train_or_test, f"{id}_blc_{blc}.npy"), prediction_input)
 
 if __name__ == "__main__":
+    train_num = 10
+    test_num = 1
+    #%%
     os.makedirs(os.path.join("dataset", "prediction_result", "train"), exist_ok=True)
     os.makedirs(os.path.join("dataset", "prediction_result", "test"), exist_ok=True)
-    gen_prediction_input(30, 'train', train_SO2)
-    gen_prediction_input(3, 'test', test_SO2)
+    gen_prediction_input(train_num, 'train', train_SO2)
+    gen_prediction_input(test_num, 'test', test_SO2)
     
     

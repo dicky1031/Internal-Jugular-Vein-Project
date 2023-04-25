@@ -100,6 +100,9 @@ def gen_surrogate_result(bloodConc:list, used_SO2:list, mus:dict, mua:dict, trai
         
         
 if __name__ == "__main__":
+    train_num = 10
+    test_num = 1
+    
     #%train data
     total_num = 10
 
@@ -116,14 +119,16 @@ if __name__ == "__main__":
         mua[t] = pd.DataFrame(mua_spectrum[t]).to_numpy()
     
     # generate trainset
-    for id in range(30):
+    for id in range(train_num):
+        print(f'now processing train_{id}...')
         rangdom_gen = [2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),
                        2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),
                        2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),2*random.randint(0, total_num-1)] # generate evens for choose training input
         gen_surrogate_result(bloodConc, train_SO2, mus, mua, "train", rangdom_gen, id)
     
     # generate testset
-    for id in range(3):
+    for id in range(test_num):
+        print(f'now processing test_{id}...')
         rangdom_gen = [2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1,
                        2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1,
                        2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1] # generate odds for choose training input

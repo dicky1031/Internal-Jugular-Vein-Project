@@ -68,6 +68,9 @@ def test(trlog,ep,min_loss):
 
 
 if __name__ == "__main__":
+    train_num = 10
+    test_num = 1
+    #%%
     EPOCH = 50
     BATCH_SIZE = 256
     lr=0.0001
@@ -75,12 +78,12 @@ if __name__ == "__main__":
     os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
     
     train_folder = os.path.join("dataset", "prediction_result", "train")
-    train_dataset = myDataset(train_folder, 30, bloodConc, len(bloodConc), len(train_SO2))
+    train_dataset = myDataset(train_folder, train_num, bloodConc, len(bloodConc), len(train_SO2))
     print(f'train dataset size : {len(train_dataset)}')
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 
     train_folder = os.path.join("dataset", "prediction_result", "test")
-    test_dataset = myDataset(train_folder, 1, bloodConc, len(bloodConc), len(test_SO2))
+    test_dataset = myDataset(train_folder, test_num, bloodConc, len(bloodConc), len(test_SO2))
     print(f'test dataset size : {len(test_dataset)}')
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
     torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
