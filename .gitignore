@@ -218,8 +218,7 @@ $RECYCLE.BIN/
 # avoid upload .jnii .jdat
 *.jnii
 *.jdat
-*.npy
-*.pth
 dataset
+model_save
 
 # End of https://www.toptal.com/developers/gitignore/api/python,windows,git
