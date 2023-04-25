@@ -4,7 +4,7 @@ import random
 import numpy as np
 import pandas as pd
 import torch
-from surrogate_model import ANN
+from ANN_models import SurrogateModel
 import sys
 os.chdir(sys.path[0])
 
@@ -26,9 +26,9 @@ with open(os.path.join("OPs_used", "SO2.json"), 'r') as f:
 mus_set = pd.read_csv(os.path.join("OPs_used","mus_set.csv")).to_numpy()
 mua_set = pd.read_csv(os.path.join("OPs_used","mua_set.csv")).to_numpy()
 # load surrogate model
-large_ijv_model = ANN().cuda()
+large_ijv_model = SurrogateModel().cuda()
 large_ijv_model.load_state_dict(torch.load(os.path.join("surrogate_model","large_ANN_model.pth")))
-small_ijv_model = ANN().cuda()
+small_ijv_model = SurrogateModel().cuda()
 small_ijv_model.load_state_dict(torch.load(os.path.join("surrogate_model","small_ANN_model.pth")))
 
 #%% functions
@@ -94,9 +94,9 @@ def gen_surrogate_result(bloodConc:list, used_SO2:list, mus:dict, mua:dict, trai
             surrogate_input = surrogate_input.drop(columns=['wavelength', 'skin_mus', 'fat_mus', 'muscle_mus', 'ijv_mus', 
                                  'cca_mus', 'skin_mua', 'fat_mua', 'answer', 'bloodConc']) # drop these values for saving memory
             
-            surrogate_input.to_csv(os.path.join("dataset", "surrogate_result", train_or_test, f'bloodConc_{blc}', f'SO2_{s}', f'{id}.csv'), index=False) 
+            surrogate_input.to_csv(os.path.join("dataset", "surrogate_result", train_or_test, f'bloodConc_{blc}', f'SO2_{s}', f'{id}_{train_or_test}.csv'), index=False) 
         surrogate_concurrent_data = pd.DataFrame(surrogate_concurrent_data)
-        surrogate_concurrent_data.to_csv(os.path.join("dataset", "surrogate_result", train_or_test, f'{id}_concurrent.csv'), index=False)
+        surrogate_concurrent_data.to_csv(os.path.join("dataset", "surrogate_result", train_or_test, f'{id}_{train_or_test}_concurrent.csv'), index=False)
         
         
 if __name__ == "__main__":
@@ -116,14 +116,14 @@ if __name__ == "__main__":
         mua[t] = pd.DataFrame(mua_spectrum[t]).to_numpy()
     
     # generate trainset
-    for id in range(10):
+    for id in range(30):
         rangdom_gen = [2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),
                        2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),
                        2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),2*random.randint(0, total_num-1)] # generate evens for choose training input
         gen_surrogate_result(bloodConc, train_SO2, mus, mua, "train", rangdom_gen, id)
     
     # generate testset
-    for id in range(1):
+    for id in range(3):
         rangdom_gen = [2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1,
                        2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1,
                        2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1,2*random.randint(0, total_num-1)+1] # generate odds for choose training input
