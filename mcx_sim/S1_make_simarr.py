@@ -79,7 +79,7 @@ if __name__ == "__main__":
     np.save(os.path.join('OPs_used', 'mus_set.npy'), mus_set)
     mus_set = pd.DataFrame(
         mus_set, columns=['skin', 'fat', 'muscle', 'ijv', 'cca'])
-    mus_set.to_csv(os.path.join('OPs_used', 'mus_set.csv'))
+    mus_set.to_csv(os.path.join('OPs_used', 'mus_set.csv'), index=False)
 
     # Get Mua ser
     with open(os.path.join("OPs_used", "mua_bound.json"), "r") as f:
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     mua_set = Get_Mua_Set(mua_bound, split_point, mua_tissues)
     np.save(os.path.join('OPs_used', 'mua_set.npy'), mua_set)
     mua_set = pd.DataFrame(mua_set, columns=mua_tissues)
-    mua_set.to_csv(os.path.join('OPs_used', 'mua_set.csv'))
+    mua_set.to_csv(os.path.join('OPs_used', 'mua_set.csv'), index=False)
 
     # load mua for calculating reflectance
     muaPath = os.path.join("input_template", "mua_test.json")

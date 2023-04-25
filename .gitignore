@@ -220,5 +220,6 @@ $RECYCLE.BIN/
 *.jdat
 *.npy
 *.pth
+dataset
 
 # End of https://www.toptal.com/developers/gitignore/api/python,windows,git
