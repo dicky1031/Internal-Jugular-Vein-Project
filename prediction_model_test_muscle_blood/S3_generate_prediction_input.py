@@ -41,13 +41,13 @@ def gen_prediction_input(num : int, train_or_test: str, muscle_SO2_used:float, S
             np.save(os.path.join("dataset", "prediction_result", train_or_test, f"{id}_blc_{blc}_muscle_change_{muscle_SO2_used-base_muscle_SO2:.2f}.npy"), prediction_input)
 
 if __name__ == "__main__":
-    train_num = 20
-    test_num = 3
+    test_num = 200
     base_muscle_SO2 = 0.95
     #%%
     # os.makedirs(os.path.join("dataset", "prediction_result", "train"), exist_ok=True)
     os.makedirs(os.path.join("dataset", "prediction_result", "test"), exist_ok=True)
     # gen_prediction_input(train_num, 'train', train_SO2)
+    muscle_SO2 = [i/100 for i in range(90,101,1)]
     for muscle_SO2_used in muscle_SO2[::5]:
         print(f'now processing muscle_mua_change_from_{base_muscle_SO2}_to_{muscle_SO2_used}...')
         gen_prediction_input(test_num, 'test', muscle_SO2_used, test_SO2)

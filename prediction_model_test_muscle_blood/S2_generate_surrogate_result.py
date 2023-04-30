@@ -107,7 +107,7 @@ def gen_surrogate_result(bloodConc:list, used_SO2:list, mus:dict, mua:dict, musc
         
         
 if __name__ == "__main__":
-    test_num = 3
+    test_num = 200
     
     #%num of spectrum used
     total_num = 10

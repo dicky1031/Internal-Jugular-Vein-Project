@@ -38,3 +38,23 @@ class PredictionModel(nn.Module):
         
     def forward(self, x):
         return self.net(x)
+#%% model2
+class PredictionModel2(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(80, 256),
+            nn.ReLU(),
+            # nn.Linear(512, 256),
+            # nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Linear(32, 1)
+            )
+        
+    def forward(self, x):
+        return self.net(x)

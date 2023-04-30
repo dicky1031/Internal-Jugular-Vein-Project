@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from ANN_models import PredictionModel
+from ANN_models import PredictionModel, PredictionModel2
 from myDataset import myDataset
 import time
 import json
@@ -68,13 +68,13 @@ def test(trlog,ep,min_loss):
 
 
 if __name__ == "__main__":
-    train_num = 10
-    test_num = 1
+    train_num = 10000
+    test_num = 200
+    result_folder = "prediction_model2"
     #%%
-    EPOCH = 50
-    BATCH_SIZE = 256
+    EPOCH = 200
+    BATCH_SIZE = 64
     lr=0.0001
-    result_folder = "result1"
     os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
     
     train_folder = os.path.join("dataset", "prediction_result", "train")
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     # train model
     start_time = time.time()
-    model = PredictionModel().cuda()
+    model = PredictionModel2().cuda()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
     trlog = train(model, optimizer, criterion, train_loader, EPOCH, BATCH_SIZE, lr)

@@ -18,7 +18,7 @@ class myDataset(Dataset):
         for file in self.files:
             datas = np.load(file)
             for data in datas:
-                self.x.append(data[:81])
+                self.x.append(data[:80])
                 self.y.append(data[81])
                 self.id.append(data[82])
                 self.muscle_SO2.append(data[83])
@@ -27,7 +27,7 @@ class myDataset(Dataset):
         self.id = np.array(self.id)
         self.muscle_SO2 = np.array(self.muscle_SO2)
         
-        self.x[:, 80] = (self.x[:, 80] - min(bloodConc)) / (max(bloodConc) - min(bloodConc)) # normalize blc to 0~1
+        # self.x[:, 80] = (self.x[:, 80] - min(bloodConc)) / (max(bloodConc) - min(bloodConc)) # normalize blc to 0~1
         self.x = torch.from_numpy(self.x)
         self.y = torch.from_numpy(self.y)
         

@@ -12,16 +12,16 @@ class myDataset(Dataset):
         self.files = glob(os.path.join(self.folder, "*"))
         self.files = self.files[:num_of_id*num_of_blc]
         
-        self.x = np.zeros((num_of_id*num_of_blc*num_of_SO2, 81))
+        self.x = np.zeros((num_of_id*num_of_blc*num_of_SO2, 80))
         self.y = np.zeros((num_of_id*num_of_blc*num_of_SO2, 1))
         self.id = np.zeros((num_of_id*num_of_blc*num_of_SO2, 1))
         for i, file in enumerate(self.files):
             data = np.load(file)
-            self.x[i*num_of_SO2:i*num_of_SO2+num_of_SO2] = data[:, :81]
+            self.x[i*num_of_SO2:i*num_of_SO2+num_of_SO2] = data[:, :80]
             self.y[i*num_of_SO2:i*num_of_SO2+num_of_SO2] = data[:, 81].reshape(-1,1)
             self.id[i*num_of_SO2:i*num_of_SO2+num_of_SO2] = data[:, 82].reshape(-1,1)
         
-        self.x[:, 80] = (self.x[:, 80] - min(bloodConc)) / (max(bloodConc) - min(bloodConc)) # normalize blc to 0~1
+        # self.x[:, 80] = (self.x[:, 80] - min(bloodConc)) / (max(bloodConc) - min(bloodConc)) # normalize blc to 0~1
         self.x = torch.from_numpy(self.x)
         self.y = torch.from_numpy(self.y)
         

@@ -37,8 +37,8 @@ def gen_prediction_input(num : int, train_or_test: str, SO2_used : list):
             np.save(os.path.join("dataset", "prediction_result", train_or_test, f"{id}_blc_{blc}.npy"), prediction_input)
 
 if __name__ == "__main__":
-    train_num = 10
-    test_num = 1
+    train_num = 10000
+    test_num = 200
     #%%
     os.makedirs(os.path.join("dataset", "prediction_result", "train"), exist_ok=True)
     os.makedirs(os.path.join("dataset", "prediction_result", "test"), exist_ok=True)
