@@ -9,7 +9,7 @@ class myDataset(Dataset):
     def __init__(self, folder:str, num_of_id:int, bloodConc:list, num_of_blc:int, num_of_SO2:int, num_of_muscle_SO2:int):
         super().__init__()
         self.folder = folder
-        self.files = glob(os.path.join(self.folder, "*"))
+        self.files = glob(os.path.join(self.folder, "*.npy"))
         
         self.x = []
         self.y = []
@@ -18,7 +18,7 @@ class myDataset(Dataset):
         for file in self.files:
             datas = np.load(file)
             for data in datas:
-                self.x.append(data[:80])
+                self.x.append(data[:81])
                 self.y.append(data[81])
                 self.id.append(data[82])
                 self.muscle_SO2.append(data[83])

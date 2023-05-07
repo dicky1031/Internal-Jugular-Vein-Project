@@ -107,7 +107,8 @@ def gen_surrogate_result(bloodConc:list, used_SO2:list, mus:dict, mua:dict, musc
         
         
 if __name__ == "__main__":
-    test_num = 200
+    train_num = 500
+    test_num = 50
     
     #%num of spectrum used
     total_num = 10
@@ -123,6 +124,15 @@ if __name__ == "__main__":
     tissue = ["skin", "fat", "cca", "muscle"]
     for t in tissue:
         mua[t] = pd.DataFrame(mua_spectrum[t]).to_numpy()
+    
+    # generate trainset
+    for id in range(train_num):
+        for muscle_SO2_used in muscle_SO2:
+            print(f'now processing train_{id} muscle_SO2 {muscle_SO2_used}...')
+            rangdom_gen = [2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),
+                        2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),
+                        2*random.randint(0, total_num-1),2*random.randint(0, total_num-1),2*random.randint(0, total_num-1)] # generate odds for choose training input
+            gen_surrogate_result(bloodConc, test_SO2, mus, mua, muscle_SO2_used, "train", rangdom_gen, id)
     
     # generate testset
     for id in range(test_num):

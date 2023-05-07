@@ -103,18 +103,19 @@ def test(model, test_loader):
                        'output' : list(all_output.reshape(-1)),
                        'target' : list(all_target.reshape(-1)),
                        'error' : list(error.reshape(-1)),
-                       'muscle_mua_change' : list(np.round(muscle_mua_chage_used))})
+                       'muscle_mua_change' : list(np.round(10*muscle_mua_chage_used)/10)})
     
     return df
 
 
 if __name__ == "__main__":
-    test_num = 200
+    train_num = 500
+    test_num = 50
     #%%
-    BATCH_SIZE = 64
+    BATCH_SIZE = 128
     EPOCH = 200
     lr = 0.0001
-    result_folder = "result1"
+    result_folder = "PredictionModel_only_test_no_train"
     os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
     
     test_folder = os.path.join("dataset", "prediction_result", "test")
@@ -124,40 +125,52 @@ if __name__ == "__main__":
     torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
     
     # load model
-    model = PredictionModel2().cuda()
+    model = PredictionModel().cuda()
     model.load_state_dict(torch.load(os.path.join("prediction_model", "prediction_model.pth")))
 
-    # train_
-    train_dataset = []
-    for x,y,id,muscle_SO2 in test_dataset:
-        if muscle_SO2 == 0:
-            train_dataset.append((x,y,id,muscle_SO2))
+    # train
     # train_folder = os.path.join("dataset", "prediction_result", "train")
-    # train_dataset = myDataset(train_folder, train_num, bloodConc, len(bloodConc), len(train_SO2))
-    print(f'train dataset size : {len(train_dataset)}')
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    print(f'train loader size : {len(train_loader)}')
-
-    # train model
-    start_time = time.time()
-    model = PredictionModel2().cuda()
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    criterion = nn.MSELoss()
-    trlog = train(model, optimizer, criterion, train_loader, EPOCH, BATCH_SIZE, lr)
-    end_time = time.time()
-    print(f'elapsed time : {end_time-start_time:.3f} sec')
-    trlog['elapsed_time'] = end_time-start_time
-    trlog['train_size'] = len(train_dataset)
-    trlog['test_size'] = len(test_dataset)
-
-    # save result
-    with open(os.path.join("model_save", result_folder, "trlog.json"), 'w') as f:
-        json.dump(trlog, f, indent=4)  
-    torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
+    # train_dataset = myDataset(train_folder, train_num, bloodConc, len(bloodConc), len(test_SO2), len(muscle_SO2))
+    # print(f'train dataset size : {len(train_dataset)}')
+    # train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     
-    # load model
-    model = PredictionModel2().cuda()
-    model.load_state_dict(torch.load(trlog['best_model']))
+    # train_
+    # train_dataset_temp = []
+    # for x,y,id,muscle_SO2 in train_dataset:
+    #     # print(muscle_SO2)
+    #     if muscle_SO2 == 0:
+    #         train_dataset_temp.append((x,y,id,muscle_SO2))
+    # # train_folder = os.path.join("dataset", "prediction_result", "train")
+    # # train_dataset = myDataset(train_folder, train_num, bloodConc, len(bloodConc), len(train_SO2))
+    # print(f'train dataset size : {len(train_dataset_temp)}')
+    # train_loader = DataLoader(train_dataset_temp, batch_size=BATCH_SIZE, shuffle=True)
+    # print(f'train loader size : {len(train_loader)}')
+    
+
+    # # train model
+    # start_time = time.time()
+    # model = PredictionModel().cuda()
+    # optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    # criterion = nn.MSELoss()
+    # trlog = train(model, optimizer, criterion, test_loader, EPOCH, BATCH_SIZE, lr)
+    # end_time = time.time()
+    # print(f'elapsed time : {end_time-start_time:.3f} sec')
+    # trlog['elapsed_time'] = end_time-start_time
+    # # trlog['train_size'] = len(train_dataset)
+    # trlog['test_size'] = len(test_dataset)
+
+    # # save result
+    # with open(os.path.join("model_save", result_folder, "trlog.json"), 'w') as f:
+    #     json.dump(trlog, f, indent=4)  
+    # torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
+    
+    # # load result
+    # with open(os.path.join("model_save", result_folder, "trlog.json"), 'r') as f:
+    #     trlog = json.load(f)
+    
+    # # load model
+    # model = PredictionModel().cuda()
+    # model.load_state_dict(torch.load(trlog['best_model']))
 
     # test model
     df = test(model, test_loader)  
