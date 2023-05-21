@@ -19,7 +19,7 @@ class myDataset(Dataset):
             datas = np.load(file)
             for data in datas:
                 self.x.append(data[:81])
-                self.y.append(data[81])
+                self.y.append(data[[81,83]])
                 self.id.append(data[82])
                 self.muscle_SO2.append(data[83])
         self.x = np.array(self.x)
