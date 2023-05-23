@@ -53,7 +53,7 @@ def gen_prediction_input(num : int, train_or_test: str, muscle_SO2_used:float, S
 if __name__ == "__main__":
     train_num = 500
     test_num = 50
-    base_muscle_SO2 = 0.95
+    base_muscle_SO2 = 0.7
     #%%
     os.makedirs(os.path.join("dataset", "prediction_result", "train"), exist_ok=True)
     os.makedirs(os.path.join("dataset", "prediction_result", "test"), exist_ok=True)
