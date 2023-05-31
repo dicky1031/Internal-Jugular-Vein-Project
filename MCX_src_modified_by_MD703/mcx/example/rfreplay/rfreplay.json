@@ -1,0 +1,50 @@
+{
+	"Session":{
+		"ID":"rfreplay",
+		"DoAutoThread":1,
+		"DoSaveSeed":true,
+		"Photons":1000000
+	},
+	"Forward":{
+		"T0":0,
+		"T1":5e-09,
+		"Dt":5e-09
+	},
+	"Optode":{
+		"Source":{
+			"Pos":[20,20,0],
+			"Dir":[0,0,1]
+		},
+		"Detector":[
+			{
+				"Pos":[15,20,0],
+				"R":2
+			}
+		]
+	},
+	"Domain":{
+		"OriginType":1,
+		"Media":[
+			{
+				"mua":0,
+				"mus":0,
+				"g":1,
+				"n":1
+			},
+			{
+				"mua":0.005,
+				"mus":1,
+				"g":0,
+				"n":1.37
+			}
+		],
+		"MediaFormat":"byte",
+		"Dim":[40,40,40],
+		"VolumeFile":""
+	},
+	"Shapes":[
+		{"Name":     "cube60"},
+		{"Origin":   [0,0,0]},
+		{"Grid":     {"Tag":1, "Size":[40,40,20]}}
+	]
+}
