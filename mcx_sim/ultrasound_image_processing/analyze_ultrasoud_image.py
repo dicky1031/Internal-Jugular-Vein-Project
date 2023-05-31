@@ -3,14 +3,19 @@ import scipy.io as sio
 import cv2
 import json
 import matplotlib.pyplot as plt
+import os
+import sys
+# %% move to current file path
+os.chdir(sys.path[0])
+
 plt.rcParams.update({"mathtext.default": "regular"})
 plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["figure.dpi"] = 300
 
 
 # %% parameters setting
-subject = "ctchen"
-date = "20220509"
+subject = "KB"
+date = "20220815"
 state = "IJVSmall"
 tissueSet = ["skin", "fat", "ijv", "cca"]
 with open("blood_vessel_segmentation_line.json") as f:
@@ -265,8 +270,8 @@ else:
 
 # # find perturbed region # 7 for perturbed region
 # small to large
-small = np.load("ctchen_perturbed_small.npy")
-large = np.load("ctchen_perturbed_large.npy")
+small = np.load(f"{subject}_perturbed_small.npy")
+large = np.load(f"{subject}_perturbed_large.npy")
 # large==7 --> large IJV(small muscle) , small==6 --> small muscle (large IJV)
 a = np.where((large == 7) & (small == 6))
 aa = np.where(small == 8)  # small IJV
@@ -281,7 +286,7 @@ for i in range(0, len(a[0])):
 
 plt.imshow(d[int(528//2), :, :].T)
 plt.show()
-np.save(file="ctchen_perturbed_small_to_large", arr=d)
+np.save(file=f"{subject}_perturbed_small_to_large", arr=d)
 
 
 # sio.savemat('testIJV.mat', {'testIJV': vol})
