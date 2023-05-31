@@ -90,8 +90,6 @@ def run_mcx(result_folder, subject, mus_start, mus_end, NA_enable, NA, runningNu
 
         else:
             # run stage1 : run N sims to precalculate CV
-            with open(simulationResultPath) as f:
-                simulationResult = json.load(f)
             for idx in range(repeatTimes):
                 # run
                 simulator.run(idx)
@@ -107,10 +105,8 @@ def run_mcx(result_folder, subject, mus_start, mus_end, NA_enable, NA, runningNu
             print(
                 f"Session name: {sessionID} \n Reflectance mean: {mean} \nCV: {CV} \n Predict CV: {CV/np.sqrt(repeatTimes)}", end="\n\n")
             # run stage2 : run more sim to make up cvThreshold
-            with open(simulationResultPath) as f:
-                simulationResult = json.load(f)
-            reflectanceCV = {k: simulationResult["GroupingSampleCV"][k]
-                             for k in simulationResult["GroupingSampleCV"]}
+            # reflectanceCV = {k: simulationResult["GroupingSampleCV"][k]
+            #                  for k in simulationResult["GroupingSampleCV"]}
 
             predict_CV = max(CV)/np.sqrt(repeatTimes)
             while (predict_CV > cvThreshold):
@@ -163,8 +159,8 @@ if __name__ == "__main__":
     mus_end = 1
     NA_enable = 1  # 0 no NA, 1 consider NA
     NA = 0.22
-    runningNum = 10  # (Integer or False)self.session
+    runningNum = 0  # (Integer or False)self.session
     cvThreshold = 3
-    repeatTimes = 3
+    repeatTimes = 10
     run_mcx(result_folder, subject, mus_start, mus_end, NA_enable,
             NA, runningNum, cvThreshold, repeatTimes, ijv_type)
