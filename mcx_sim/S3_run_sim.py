@@ -34,6 +34,7 @@ def run_mcx(result_folder, subject, mus_start, mus_end, NA_enable, NA, runningNu
     timer = Timer()
     ID = f'{subject}_ijv_{ijv_type}'
     for run_idx in tqdm(range(mus_start, mus_end+1)):
+        now = time.time()
         #  Setting
         session = f"run_{run_idx}"
         sessionID = os.path.join("result", result_folder, ID, session)
@@ -132,6 +133,10 @@ def run_mcx(result_folder, subject, mus_start, mus_end, NA_enable, NA, runningNu
                         f"Session name: {sessionID} \n Reflectance mean: {mean} \nCV: {CV} \n Predict CV: {CV/np.sqrt(repeatTimes+needAddOutputNum)}", end="\n\n")
                     predict_CV = max(CV)/np.sqrt(repeatTimes+needAddOutputNum)
                     repeatTimes = repeatTimes + needAddOutputNum
+                    
+            with open(simulationResultPath) as f:
+                simulationResult = json.load(f)
+                simulationResult['elapsed time'] = time.time() - now
 
         print('ETA:{}/{}'.format(timer.measure(),
                                  timer.measure(run_idx / mus_set.shape[0])))
