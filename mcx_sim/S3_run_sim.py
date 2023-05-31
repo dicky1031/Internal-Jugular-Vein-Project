@@ -132,7 +132,9 @@ def run_mcx(result_folder, subject, mus_start, mus_end, NA_enable, NA, runningNu
                     
             with open(simulationResultPath) as f:
                 simulationResult = json.load(f)
-                simulationResult['elapsed time'] = time.time() - now
+            simulationResult['elapsed time'] = time.time() - now
+            with open(simulationResultPath, "w") as f:
+                json.dump(simulationResult, f, indent=4)
 
         print('ETA:{}/{}'.format(timer.measure(),
                                  timer.measure(run_idx / mus_set.shape[0])))
