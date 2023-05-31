@@ -151,15 +151,15 @@ if __name__ == "__main__":
     # mus_start = int(sys.argv[2])
     # mus_end = int(sys.argv[3])
 
-    result_folder = "ctchen"
-    subject = "ctchen"
+    result_folder = "kb"
+    subject = "kb"
+    ijv_type = 'large_to_small'
     mus_start = 1
     mus_end = 1
-    NA_enable = 0  # 0 no NA, 1 consider NA
+    NA_enable = 1  # 0 no NA, 1 consider NA
     NA = 0.22
-    runningNum = 0  # (Integer or False)self.session
-    cvThreshold = 100
+    runningNum = 10  # (Integer or False)self.session
+    cvThreshold = 3
     repeatTimes = 3
-    ijv_type = 'large_to_small'
     run_mcx(result_folder, subject, mus_start, mus_end, NA_enable,
             NA, runningNum, cvThreshold, repeatTimes, ijv_type)

@@ -10,9 +10,9 @@ os.chdir(sys.path[0])
 # sessionID = sys.argv[1] # sessionID = "KB_ijv_small_to_large"
 # PhotonNum = sys.argv[2] # PhotonNum = 3e8
 
-result_folder = "ctchen"
-subject = "ctchen"
-PhotonNum = 1e7
+result_folder = "kb"
+subject = "kb"
+PhotonNum = 1e9
 
 # %% run
 ijv_types = ['large_to_small', 'small_to_large']

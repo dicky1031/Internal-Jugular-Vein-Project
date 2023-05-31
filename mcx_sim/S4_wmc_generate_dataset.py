@@ -224,8 +224,8 @@ if __name__ == "__main__":
     # mus_start = int(sys.argv[3])
     # mus_end = int(sys.argv[4])
 
-    result_folder = "ctchen"
-    subject = "ctchen"
+    result_folder = "kb"
+    subject = "kb"
     ijv_type = "large_to_small"
     mus_start = 1
     mus_end = 1
