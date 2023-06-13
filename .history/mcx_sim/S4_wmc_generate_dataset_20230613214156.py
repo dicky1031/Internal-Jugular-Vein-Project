@@ -6,14 +6,13 @@ import json
 import os
 from glob import glob
 from tqdm import tqdm
-import pandas as pd
 import sys
 # %% move to current file path
 os.chdir(sys.path[0])
 
 # %% Global
-mua_set = np.load(os.path.join("OPs_used", "700nm_mua_set.npy"))
-mus_set = np.load(os.path.join("OPs_used", "low_mus_set.npy"))
+mua_set = np.load(os.path.join("OPs_used", "mua_set.npy"))
+mus_set = np.load(os.path.join("OPs_used", "mus_set.npy"))
 # hardware mua setting
 air_mua = 0
 PLA_mua = 10000
@@ -62,11 +61,7 @@ class post_processing:
                                       # perturbed region = musle
                                       list(mua_set[:, 2]),
                                       list(mua_set[:, 3]),  # IJV mua
-                                      list(mua_set[:, 4]),  # CCA mua
-                                      list(mua_set[:, 2]),  # musle mua10%
-                                      list(mua_set[:, 2]),  # musle mua5%
-                                      list(mua_set[:, 2]),  # musle mua3%
-                                      list(mua_set[:, 2])  # musle mua1%
+                                      list(mua_set[:, 4])  # CCA mua
                                       ])
         elif self.ID.find("large_to_small") != -1:
             self.mua_used = np.array([mua_set.shape[0]*[self.air_mua],
@@ -78,18 +73,11 @@ class post_processing:
                                       # perturbed region = IJV mua
                                       list(mua_set[:, 3]),
                                       list(mua_set[:, 3]),  # IJV mua
-                                      list(mua_set[:, 4]),  # CCA mua
-                                      list(mua_set[:, 2]),  # musle mua10%
-                                      list(mua_set[:, 2]),  # musle mua5%
-                                      list(mua_set[:, 2]),  # musle mua3%
-                                      list(mua_set[:, 2])  # musle mua1%
+                                      list(mua_set[:, 4])  # CCA mua
                                       ])
         else:
             raise Exception("Something wrong in your ID name !")
-        self.bloodConc = np.array([list(mua_set[:, 5])])
-        self.used_SO2 = np.array([list(mua_set[:, 6])])
-        
-        return cp.array(self.mua_used), self.bloodConc, self.used_SO2
+        return cp.array(self.mua_used)
 
     def get_data(self, mus_run_idx):
         self.session = f"run_{mus_run_idx}"
@@ -160,6 +148,75 @@ def WMC(detOutputPathSet, detectorNum, used_SDS, used_mua):
 
     return output_R
 
+
+def PMC(detOutputPathSet, detectorNum, used_SDS, used_mua):
+
+    reflectance = cp.zero(
+        (len(detOutputPathSet), detectorNum, mua_set.shape[0]))
+    group_reflectance = cp.zero(
+        (len(detOutputPathSet), len(fiberSet), mua_set.shape[0]))
+    for detOutputIdx, detOutputPath in enumerate(detOutputPathSet):
+        # main
+        # sort (to make calculation of cv be consistent in each time)
+        detOutput = jd.load(detOutputPath)
+        info = detOutput["MCXData"]["Info"]
+        photonData = detOutput["MCXData"]["PhotonData"]
+        # unit conversion for photon pathlength
+        photonData["ppath"] = photonData["ppath"] * info["LengthUnit"]
+        photonData["detid"] = photonData["detid"] - \
+            1  # shift detid from 0 to start
+        for detectorIdx in range(info["DetNum"]):
+            ppath = cp.asarray(
+                photonData["ppath"][photonData["detid"][:, 0] == detectorIdx].astype(np.float64))
+            nscat = cp.asarray(
+                photonData["nscat"][photonData["detid"][:, 0] == detectorIdx].astype(np.float64))
+            W_sim = cp.exp(-ppath@used_mua) / photonNum
+            if ID.find("small_to_large") != -1:
+                us_new = cp.asarray(
+                    mus_set[mus_run_idx-1, 3].astype(np.float64))  # IJV mus
+                ua_new = cp.asarray(
+                    mua_set[:, 3].astype(np.float64))  # IJV mua
+                us_old = cp.asarray(
+                    mus_set[mus_run_idx-1, 2].astype(np.float64))  # muscle mus
+                ua_old = cp.asarray(
+                    mua_set[:, 2].astype(np.float64))  # muscle mua
+                ut_new = cp.asarray((us_new + ua_new).astype(np.float64))
+                ut_old = cp.asarray((us_old + ua_old).astype(np.float64))
+            elif ID.find("large_to_small") != -1:
+                us_new = cp.asarray(
+                    mus_set[mus_run_idx-1, 2].astype(np.float64))  # muscle mus
+                ua_new = cp.asarray(
+                    mua_set[:, 2].astype(np.float64))  # muscle mua
+                us_old = cp.asarray(
+                    mus_set[mus_run_idx-1, 3].astype(np.float64))  # IJV mus
+                ua_old = cp.asarray(
+                    mua_set[:, 3].astype(np.float64))  # IJV mua
+                ut_new = cp.asarray((us_new + ua_new).astype(np.float64))
+                ut_old = cp.asarray((us_old + ua_old).astype(np.float64))
+            else:
+                raise Exception("Something wrong in your ID name !")
+            ppath = ppath[:, 7]  # perturb region pathlength
+            nscat = nscat[:, 7]  # perturb region # of collision
+
+            # W_new = W_sim*((us_new/ut_new)/(us_old/ut_old))^j*(ut_new/ut_old)^j*exp(-ut_new*path)/exp(-ut_old*path)
+            # --> W_new =  W_sim*[((us_new/us_old)**nscat)]*[(cp.exp(-ut_new*ppath)/cp.exp(-ut_old*ppath))]
+            # --> W_new =  W_sim*[((us_new/us_old)**nscat)]*[(cp.exp(-(ut_new-ut_old)*ppath))]
+            mid_term = cp.repeat(((us_new/us_old)**nscat), mua_set.shape[0]).reshape(
+                nscat.shape[0], mua_set.shape[0])  # ((us_new/us_old)**nscat)
+            diff_ut = (ut_new-ut_old)
+            tail_term = cp.exp(-cp.outer(ppath, diff_ut))
+            W_new = W_sim*mid_term*tail_term
+            reflectance[detOutputIdx][detectorIdx][:] = W_new.sum(axis=0)
+        for fiberIdx in range(len(fiberSet)):
+            group_reflectance[detOutputIdx][fiberIdx][:] = cp.mean(
+                reflectance[detOutputIdx][used_SDS][:], axis=0)
+            used_SDS = used_SDS + 2*3
+
+    output_R = group_reflectance.mean(axis=0).T
+
+    return output_R
+
+
 if __name__ == "__main__":
     # script setting
     # datasetpath = sys.argv[1] #datasetpath = "KB_dataset_small"
@@ -169,14 +226,14 @@ if __name__ == "__main__":
 
     result_folder = "kb"
     subject = "kb"
-    ijv_type = "large_to_small"
+    ijv_type = "small_to_large"
     mus_start = 1
     mus_end = 1
 
-    ID = os.path.join("dataset", result_folder, f"{subject}_ijv_{ijv_type}", 'low')
+    ID = os.path.join("result", result_folder, f"{subject}_ijv_{ijv_type}")
     ijv_size = ijv_type.split("_")[0]
     datasetpath = f"{subject}_dataset_{ijv_size}"
-    os.makedirs(os.path.join("dataset", result_folder,
+    os.makedirs(os.path.join("result", result_folder,
                 datasetpath), exist_ok=True)
 
     processsor = post_processing(ID)
@@ -187,22 +244,16 @@ if __name__ == "__main__":
         used_mus = processsor.get_used_mus(mus_set, mus_run_idx)
         used_mus = np.tile(np.array(used_mus), mua_set.shape[0]).reshape(
             mua_set.shape[0], 5)
-        dataset_output = np.empty([mua_set.shape[0], 16+len(fiberSet)])
-        used_mua, bloodConc, used_SO2 = processsor.get_used_mua(mua_set)
-        
-        output_R = WMC(detOutputPathSet, detectorNum, used_SDS, used_mua)
-        
-        dataset_output[:, 16:] = cp.asnumpy(output_R)
+        dataset_output = np.empty([mua_set.shape[0], 10+len(fiberSet)])
+        used_mua = processsor.get_used_mua(mua_set)
+        if datasetpath.find("small_to_large") != -1 or datasetpath.find("large_to_small") != -1:
+            output_R = PMC(detOutputPathSet, detectorNum, used_SDS, used_mua)
+        else:
+            output_R = WMC(detOutputPathSet, detectorNum, used_SDS, used_mua)
+        dataset_output[:, 10:] = cp.asnumpy(output_R)
         used_mua = used_mua[3:]  # skin, fat, muscle, perturbed, IJV, CCA
         used_mua = cp.concatenate([used_mua[:3], used_mua[4:]]).T
         used_mua = cp.asnumpy(used_mua)
-        dataset_output[:, :16] = np.concatenate([used_mus, used_mua, bloodConc, used_SO2], axis=1)
-        np.save(os.path.join("dataset", result_folder, datasetpath,
+        dataset_output[:, :10] = np.concatenate([used_mus, used_mua], axis=1)
+        np.save(os.path.join("result", result_folder, datasetpath,
                 f"mus_{mus_run_idx}.npy"), dataset_output)
-        col_mus = ['skin_mus', 'fat_mus', 'muscle_mus', 'ijv_mus', 'cca_mus']
-        col_mua = ['skin_mua', 'fat_mua', 'muscle_mua', 'ijv_mua', 'cca_mua', 'muscle10%_mua', 'muscle5%_mua', 'muscle3%_mua', 'muscle1%_mua', 'bloodConc', 'used_SO2']
-        col_SDS = [f'SDS_{i}' for i in range(len(fiberSet))]
-        col = col_mus + col_mua + col_SDS
-        dataset_output = pd.DataFrame(dataset_output, columns=col)
-        dataset_output.to_csv(os.path.join("dataset", result_folder, datasetpath,
-                f"mus_{mus_run_idx}.csv"), index=False)

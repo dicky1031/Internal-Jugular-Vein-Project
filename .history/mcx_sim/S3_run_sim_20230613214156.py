@@ -1,4 +1,3 @@
-# %%
 from mcx_ultrasound_opsbased import MCX
 import calculateR_CV
 import json
@@ -10,10 +9,10 @@ from time import sleep
 from tqdm import tqdm
 import time
 import sys
-
 # %% move to current file path
 os.chdir(sys.path[0])
-# %%
+
+
 # %% run
 
 class Timer():
@@ -30,16 +29,30 @@ class Timer():
         return '{}s'.format(x)
 
 
-def run_mcx(result_folder, mus_type, subject, mus_start, mus_end, NA_enable, NA, runningNum, cvThreshold, repeatTimes, ijv_type):
-    mus_set = np.load(os.path.join("OPs_used", f"{mus_type}_mus_set.npy"))
+def run_mcx(result_folder, subject, mus_start, mus_end, NA_enable, NA, runningNum, cvThreshold, repeatTimes, ijv_type):
+    mus_set = np.load(os.path.join("OPs_used", "mus_set.npy"))
     timer = Timer()
     ID = f'{subject}_ijv_{ijv_type}'
     for run_idx in tqdm(range(mus_start, mus_end+1)):
         now = time.time()
         #  Setting
         session = f"run_{run_idx}"
-        sessionID = os.path.join("dataset", result_folder, ID, mus_type, session)
-        
+        sessionID = os.path.join("result", result_folder, ID, session)
+
+        #  load mua for calculating reflectance
+        with open(os.path.join(sessionID, "mua_test.json")) as f:
+            mua = json.load(f)
+        muaUsed = [mua["1: Air"],
+                   mua["2: PLA"],
+                   mua["3: Prism"],
+                   mua["4: Skin"],
+                   mua["5: Fat"],
+                   mua["6: Muscle"],
+                   mua["7: Muscle or IJV (Perturbed Region)"],
+                   mua["8: IJV"],
+                   mua["9: CCA"]
+                   ]
+
         #  Do simulation
         # initialize
         simulator = MCX(sessionID)
@@ -127,7 +140,7 @@ def run_mcx(result_folder, mus_type, subject, mus_start, mus_end, NA_enable, NA,
                                  timer.measure(run_idx / mus_set.shape[0])))
         sleep(0.01)
 
-# %%
+
 if __name__ == "__main__":
 
     # script setting
@@ -144,31 +157,12 @@ if __name__ == "__main__":
     result_folder = "kb"
     subject = "kb"
     ijv_type = 'small_to_large'
-    mus_start = 1
-    mus_end = 20
+    mus_start = 830
+    mus_end = 1225
     NA_enable = 1  # 0 no NA, 1 consider NA
     NA = 0.22
     runningNum = 0  # (Integer or False)self.session
     cvThreshold = 3
     repeatTimes = 10
-    
-    run_mcx(result_folder=result_folder, 
-            mus_type='high', 
-            subject=subject, mus_start=mus_start, mus_end=mus_end, 
-            NA_enable=NA_enable, NA=NA,
-            runningNum=runningNum, cvThreshold=cvThreshold, 
-            repeatTimes=repeatTimes, ijv_type=ijv_type)
-    run_mcx(result_folder=result_folder, 
-            mus_type='medium', 
-            subject=subject, mus_start=mus_start, mus_end=mus_end, 
-            NA_enable=NA_enable, NA=NA,
-            runningNum=runningNum, cvThreshold=cvThreshold, 
-            repeatTimes=repeatTimes, ijv_type=ijv_type)
-    run_mcx(result_folder=result_folder, 
-            mus_type='low', 
-            subject=subject, mus_start=mus_start, mus_end=mus_end, 
-            NA_enable=NA_enable, NA=NA,
-            runningNum=runningNum, cvThreshold=cvThreshold, 
-            repeatTimes=repeatTimes, ijv_type=ijv_type)
-
-
+    run_mcx(result_folder, subject, mus_start, mus_end, NA_enable,
+            NA, runningNum, cvThreshold, repeatTimes, ijv_type)

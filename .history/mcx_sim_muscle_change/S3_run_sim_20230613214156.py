@@ -38,7 +38,7 @@ def run_mcx(result_folder, mus_type, subject, mus_start, mus_end, NA_enable, NA,
         now = time.time()
         #  Setting
         session = f"run_{run_idx}"
-        sessionID = os.path.join("dataset", result_folder, ID, mus_type, session)
+        sessionID = os.path.join("result", result_folder, ID, mus_type, session)
         
         #  Do simulation
         # initialize

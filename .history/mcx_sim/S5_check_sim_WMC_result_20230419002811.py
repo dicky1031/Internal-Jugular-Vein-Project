@@ -53,13 +53,13 @@ if __name__ == "__main__":
     result_folder = "ctchen"
     subject = "ctchen"
 
-    folder = os.path.join("dataset", result_folder,
+    folder = os.path.join("result", result_folder,
                           f"{subject}_ijv_small_to_large")
     MC_check(folder)
-    folder = os.path.join("dataset", result_folder,
+    folder = os.path.join("result", result_folder,
                           f"{subject}_ijv_large_to_small")
     MC_check(folder)
-    folder = os.path.join("dataset", result_folder, f"{subject}_dataset_large")
+    folder = os.path.join("result", result_folder, f"{subject}_dataset_large")
     WMC_check(folder)
-    older = os.path.join("dataset", result_folder, f"{subject}_dataset_small")
+    older = os.path.join("result", result_folder, f"{subject}_dataset_small")
     WMC_check(folder)

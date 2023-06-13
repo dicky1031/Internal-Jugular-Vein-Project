@@ -26,16 +26,16 @@ for ijv_type in ijv_types:
     sessionID = f'{subject}_ijv_{ijv_type}'
 
     os.makedirs(os.path.join(
-        "dataset", result_folder, sessionID), exist_ok=True)
+        "result", result_folder, sessionID), exist_ok=True)
 
     # create runfile folder
     for run_idx in range(1, mus_set.shape[0]+1):
         run_name = f"run_{run_idx}"
-        os.makedirs(os.path.join("dataset", result_folder,
+        os.makedirs(os.path.join("result", result_folder,
                     sessionID, run_name), exist_ok=True)
         for filename in copylist:
             src = os.path.join("input_template", filename)
-            dst = os.path.join("dataset", result_folder,
+            dst = os.path.join("result", result_folder,
                                sessionID, run_name, filename)
             shutil.copyfile(src, dst)
 
@@ -48,9 +48,9 @@ for ijv_type in ijv_types:
                 config["VolumePath"] = os.path.join(os.getcwd(
                 ), "ultrasound_image_processing", f"{subject}_perturbed_small_to_large.npy")
                 config["MCXInputPath"] = os.path.join(os.getcwd(
-                ), "dataset", result_folder, sessionID, run_name, "ijv_dense_symmetric_detectors_backgroundfiber_pmc.json")
+                ), "result", result_folder, sessionID, run_name, "ijv_dense_symmetric_detectors_backgroundfiber_pmc.json")
                 config["OutputPath"] = os.path.join(
-                    os.getcwd(), "dataset", result_folder, sessionID)
+                    os.getcwd(), "result", result_folder, sessionID)
                 config["Type"] = sessionID
                 with open(dst, "w") as f:
                     json.dump(config, f, indent=4)
