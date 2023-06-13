@@ -1,4 +1,4 @@
-
+# %%
 import numpy as np
 import cupy as cp
 import jdata as jd
@@ -12,24 +12,15 @@ import sys
 os.chdir(sys.path[0])
 
 # %% Global
-mua_set = np.load(os.path.join("OPs_used", "700nm_mua_set.npy"))
-mus_set = np.load(os.path.join("OPs_used", "low_mus_set.npy"))
 # hardware mua setting
 air_mua = 0
 PLA_mua = 10000
 prism_mua = 0
-mua_used = [mua_set.shape[0]*[air_mua],
-            mua_set.shape[0]*[PLA_mua],
-            mua_set.shape[0]*[prism_mua],
-            list(mua_set[:, 0]),  # skin mua
-            list(mua_set[:, 1]),  # fat mua
-            list(mua_set[:, 2]),  # musle mua
-            list(mua_set[:, 2]),  # perturbed region = musle
-            list(mua_set[:, 3]),  # IJV mua
-            list(mua_set[:, 4])  # CCA mua
-            ]
+
 # each detector has 6 copy to magnify the signal
 used_SDS = cp.array([0, 1, 2, 3, 4, 5])
+
+# %%
 # %%
 
 
@@ -66,7 +57,7 @@ class post_processing:
                                       list(mua_set[:, 2]),  # musle mua10%
                                       list(mua_set[:, 2]),  # musle mua5%
                                       list(mua_set[:, 2]),  # musle mua3%
-                                      list(mua_set[:, 2])  # musle mua1%
+                                      list(mua_set[:, 7])  # musle mua1%
                                       ])
         elif self.ID.find("large_to_small") != -1:
             self.mua_used = np.array([mua_set.shape[0]*[self.air_mua],
@@ -82,14 +73,15 @@ class post_processing:
                                       list(mua_set[:, 2]),  # musle mua10%
                                       list(mua_set[:, 2]),  # musle mua5%
                                       list(mua_set[:, 2]),  # musle mua3%
-                                      list(mua_set[:, 2])  # musle mua1%
+                                      list(mua_set[:, 7])  # musle mua1%
                                       ])
         else:
             raise Exception("Something wrong in your ID name !")
         self.bloodConc = np.array([list(mua_set[:, 5])])
         self.used_SO2 = np.array([list(mua_set[:, 6])])
+        self.muscle_SO2 = np.array([list(mua_set[:, 8])])
         
-        return cp.array(self.mua_used), self.bloodConc, self.used_SO2
+        return cp.array(self.mua_used), self.bloodConc, self.used_SO2, self.muscle_SO2
 
     def get_data(self, mus_run_idx):
         self.session = f"run_{mus_run_idx}"
@@ -133,7 +125,7 @@ def WMC(detOutputPathSet, detectorNum, used_SDS, used_mua):
             #     reflectance[detOutputIdx][detectorIdx] = cp.exp(-ppath[head_idx:split_idx,:]@used_mua).sum() / photonNum
 
             # batch ppath for GPU use
-            max_memory = 100000
+            max_memory = 1000
             if ppath.shape[0] > max_memory:
                 for idx, ppath_idx in enumerate(range(0, ppath.shape[0]//max_memory)):
                     if idx == 0:
@@ -160,49 +152,64 @@ def WMC(detOutputPathSet, detectorNum, used_SDS, used_mua):
 
     return output_R
 
+
+# %%
 if __name__ == "__main__":
     # script setting
     # datasetpath = sys.argv[1] #datasetpath = "KB_dataset_small"
     # ID = sys.argv[2] # ID = "KB_ijv_small_to_large"
     # mus_start = int(sys.argv[3])
     # mus_end = int(sys.argv[4])
-
+    with open(os.path.join("OPs_used","wavelength.json"), 'r') as f:
+        wavelength = json.load(f) 
+        wavelength = wavelength['wavelength']
+    mus_types = ['high', 'medium', 'low']
     result_folder = "kb"
     subject = "kb"
-    ijv_type = "large_to_small"
+    ijv_type = "small_to_large"
     mus_start = 1
-    mus_end = 1
+    mus_end = 20
+    
+    for mus_type in mus_types:
+        ID = os.path.join("dataset", result_folder, f"{subject}_ijv_{ijv_type}", 'low')
+        ijv_size = ijv_type.split("_")[0]
+        datasetpath = f"{subject}_dataset_{ijv_size}"
+        os.makedirs(os.path.join("dataset", result_folder,
+                    datasetpath, mus_type), exist_ok=True)
 
-    ID = os.path.join("dataset", result_folder, f"{subject}_ijv_{ijv_type}", 'low')
-    ijv_size = ijv_type.split("_")[0]
-    datasetpath = f"{subject}_dataset_{ijv_size}"
-    os.makedirs(os.path.join("dataset", result_folder,
-                datasetpath), exist_ok=True)
+        processsor = post_processing(ID)
+        for mus_run_idx in tqdm(range(mus_start, mus_end+1)):
+            mua_set = np.load(os.path.join("OPs_used", f"{wavelength[mus_run_idx-1]}nm_mua_set.npy"))
+            mus_set = np.load(os.path.join("OPs_used", f"{mus_type}_mus_set.npy")) 
+            print(f"\n Now run mus_{mus_run_idx}")
+            photonNum, fiberSet, detOutputPathSet, detectorNum = processsor.get_data(
+                mus_run_idx)
+            used_mus = processsor.get_used_mus(mus_set, mus_run_idx)
+            used_mus = np.tile(np.array(used_mus), mua_set.shape[0]).reshape(
+                mua_set.shape[0], 5)
+            dataset_output = np.empty([mua_set.shape[0], 17+len(fiberSet)])
+            used_mua, bloodConc, used_SO2, muscle_SO2 = processsor.get_used_mua(mua_set)
+            
+            output_R = WMC(detOutputPathSet, detectorNum, used_SDS, used_mua)
+            
+            dataset_output[:, 17:] = cp.asnumpy(output_R)
+            used_mua = used_mua[3:]  # skin, fat, muscle, perturbed, IJV, CCA
+            used_mua = cp.concatenate([used_mua[:3], used_mua[4:]]).T
+            used_mua = cp.asnumpy(used_mua)
+            bloodConc = bloodConc.T
+            used_SO2 = used_SO2.T
+            muscle_SO2 = muscle_SO2.T
+            dataset_output[:, :17] = np.concatenate([used_mus, used_mua, bloodConc, used_SO2, muscle_SO2], axis=1)
+            np.save(os.path.join("dataset", result_folder, datasetpath, mus_type,
+                    f"{wavelength[mus_run_idx-1]}nm_mus_{mus_run_idx}.npy"), dataset_output)
+            col_mus = ['skin_mus', 'fat_mus', 'muscle_mus', 'ijv_mus', 'cca_mus']
+            col_mua = ['skin_mua', 'fat_mua', 'muscle_mua', 'ijv_mua', 'cca_mua', 'muscle10%_mua', 'muscle5%_mua', 'muscle3%_mua', 'muscle1%_mua', 'bloodConc', 'used_SO2', 'muscle_SO2']
+            col_SDS = [f'SDS_{i}' for i in range(len(fiberSet))]
+            col = col_mus + col_mua + col_SDS
+            dataset_output = pd.DataFrame(dataset_output, columns=col)
+            dataset_output.to_csv(os.path.join("dataset", result_folder, datasetpath, mus_type,
+                    f"{wavelength[mus_run_idx-1]}nm_mus_{mus_run_idx}.csv"), index=False)
+            
+            
 
-    processsor = post_processing(ID)
-    for mus_run_idx in tqdm(range(mus_start, mus_end+1)):
-        print(f"\n Now run mus_{mus_run_idx}")
-        photonNum, fiberSet, detOutputPathSet, detectorNum = processsor.get_data(
-            mus_run_idx)
-        used_mus = processsor.get_used_mus(mus_set, mus_run_idx)
-        used_mus = np.tile(np.array(used_mus), mua_set.shape[0]).reshape(
-            mua_set.shape[0], 5)
-        dataset_output = np.empty([mua_set.shape[0], 16+len(fiberSet)])
-        used_mua, bloodConc, used_SO2 = processsor.get_used_mua(mua_set)
-        
-        output_R = WMC(detOutputPathSet, detectorNum, used_SDS, used_mua)
-        
-        dataset_output[:, 16:] = cp.asnumpy(output_R)
-        used_mua = used_mua[3:]  # skin, fat, muscle, perturbed, IJV, CCA
-        used_mua = cp.concatenate([used_mua[:3], used_mua[4:]]).T
-        used_mua = cp.asnumpy(used_mua)
-        dataset_output[:, :16] = np.concatenate([used_mus, used_mua, bloodConc, used_SO2], axis=1)
-        np.save(os.path.join("dataset", result_folder, datasetpath,
-                f"mus_{mus_run_idx}.npy"), dataset_output)
-        col_mus = ['skin_mus', 'fat_mus', 'muscle_mus', 'ijv_mus', 'cca_mus']
-        col_mua = ['skin_mua', 'fat_mua', 'muscle_mua', 'ijv_mua', 'cca_mua', 'muscle10%_mua', 'muscle5%_mua', 'muscle3%_mua', 'muscle1%_mua', 'bloodConc', 'used_SO2']
-        col_SDS = [f'SDS_{i}' for i in range(len(fiberSet))]
-        col = col_mus + col_mua + col_SDS
-        dataset_output = pd.DataFrame(dataset_output, columns=col)
-        dataset_output.to_csv(os.path.join("dataset", result_folder, datasetpath,
-                f"mus_{mus_run_idx}.csv"), index=False)
+
