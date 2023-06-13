@@ -11,6 +11,8 @@ from tqdm import tqdm
 import time
 import sys
 
+# %% move to current file path
+os.chdir(sys.path[0])
 # %%
 # %% run
 
@@ -141,9 +143,9 @@ if __name__ == "__main__":
 
     result_folder = "kb"
     subject = "kb"
-    ijv_type = 'large_to_small'
+    ijv_type = 'small_to_large'
     mus_start = 1
-    mus_end = 1
+    mus_end = 20
     NA_enable = 1  # 0 no NA, 1 consider NA
     NA = 0.22
     runningNum = 0  # (Integer or False)self.session

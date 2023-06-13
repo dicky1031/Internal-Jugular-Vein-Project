@@ -17,7 +17,7 @@ with open(os.path.join("OPs_used", "SO2.json"), 'r') as f:
     train_SO2 = SO2['train_SO2']
     test_SO2 = SO2['test_SO2']
 #%%
-def gen_prediction_input(num : int, train_or_test: str, SO2_used : list):
+def gen_prediction_input(num : int, train_or_test: str, SO2_used : list, outputpath : str):
     for id in range(num):
         print(f'now processing {train_or_test}_{id}...')
         for blc in bloodConc:
@@ -27,22 +27,23 @@ def gen_prediction_input(num : int, train_or_test: str, SO2_used : list):
                                                             f'bloodConc_{blc}', 'SO2_0.7', f'{id}_{train_or_test}.csv'))
                 surrogate_result_T2 = pd.read_csv(os.path.join("dataset", "surrogate_result", train_or_test, 
                                                             f'bloodConc_{blc}', f'SO2_{s}', f'{id}_{train_or_test}.csv'))
-                prediction_input[i][:20] = surrogate_result_T1['largeIJV_SDS1'] / surrogate_result_T1['largeIJV_SDS2']
-                prediction_input[i][20:40] = surrogate_result_T1['smallIJV_SDS1'] / surrogate_result_T1['smallIJV_SDS2']     
-                prediction_input[i][40:60] = surrogate_result_T2['largeIJV_SDS1'] / surrogate_result_T2['largeIJV_SDS2']
-                prediction_input[i][60:80] = surrogate_result_T2['smallIJV_SDS1'] / surrogate_result_T2['smallIJV_SDS2']
-                prediction_input[i][80] = blc
-                prediction_input[i][81] = s-0.7 # answer
-                prediction_input[i][82] = id # for analyzing used
+                prediction_input[i][:20] = surrogate_result_T2['largeIJV_SDS1'] / surrogate_result_T2['largeIJV_SDS2'] - surrogate_result_T1['largeIJV_SDS1'] / surrogate_result_T1['largeIJV_SDS2']
+                prediction_input[i][20:40] = surrogate_result_T2['smallIJV_SDS1'] / surrogate_result_T2['smallIJV_SDS2'] - surrogate_result_T1['smallIJV_SDS1'] / surrogate_result_T1['smallIJV_SDS2']     
+                # prediction_input[i][40:60] = surrogate_result_T2['largeIJV_SDS1'] / surrogate_result_T2['largeIJV_SDS2']
+                # prediction_input[i][60:80] = surrogate_result_T2['smallIJV_SDS1'] / surrogate_result_T2['smallIJV_SDS2']
+                prediction_input[i][40] = blc
+                prediction_input[i][41] = s-0.7 # answer
+                prediction_input[i][42] = id # for analyzing used
             np.save(os.path.join("dataset", "prediction_result", train_or_test, f"{id}_blc_{blc}.npy"), prediction_input)
 
 if __name__ == "__main__":
-    train_num = 10000
-    test_num = 200
+    train_num = 1000
+    test_num = 20
+    outputpath = 'prediction_result_formula2'
     #%%
-    os.makedirs(os.path.join("dataset", "prediction_result", "train"), exist_ok=True)
-    os.makedirs(os.path.join("dataset", "prediction_result", "test"), exist_ok=True)
-    gen_prediction_input(train_num, 'train', train_SO2)
-    gen_prediction_input(test_num, 'test', test_SO2)
+    os.makedirs(os.path.join("dataset", outputpath, "train"), exist_ok=True)
+    os.makedirs(os.path.join("dataset", outputpath, "test"), exist_ok=True)
+    gen_prediction_input(train_num, 'train', train_SO2, outputpath)
+    gen_prediction_input(test_num, 'test', test_SO2, outputpath)
     
     

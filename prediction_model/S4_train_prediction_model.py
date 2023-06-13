@@ -68,9 +68,9 @@ def test(trlog,ep,min_loss):
 
 
 if __name__ == "__main__":
-    train_num = 10000
-    test_num = 200
-    result_folder = "prediction_model2"
+    train_num = 1000
+    test_num = 20
+    result_folder = "prediction_model2_formula2"
     #%%
     EPOCH = 200
     BATCH_SIZE = 64

@@ -6,7 +6,10 @@ import numpy as np
 import sys
 result_folder = "kb"
 subject = "kb"
-PhotonNum = 1e7
+PhotonNum = 1e9
+
+# %% move to current file path
+os.chdir(sys.path[0])
 # %% run
 ijv_types = ['large_to_small', 'small_to_large']
 mus_types = ['high', 'medium', 'low']

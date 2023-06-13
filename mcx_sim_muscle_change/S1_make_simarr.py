@@ -20,7 +20,10 @@ import json
 import os
 import numpy as np
 import pandas as pd
+import sys
 
+# %% move to current file path
+os.chdir(sys.path[0])
 # %%
 def Get_Mus_Set(mus_spectrum : json, rank : int) -> np:
     skin_mus = mus_spectrum['skin']

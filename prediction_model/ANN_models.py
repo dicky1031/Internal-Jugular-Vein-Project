@@ -43,7 +43,7 @@ class PredictionModel2(nn.Module):
     def __init__(self):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Linear(80, 256),
+            nn.Linear(40, 256),
             nn.ReLU(),
             # nn.Linear(512, 256),
             # nn.ReLU(),

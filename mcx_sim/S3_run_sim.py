@@ -156,9 +156,9 @@ if __name__ == "__main__":
 
     result_folder = "kb"
     subject = "kb"
-    ijv_type = 'large_to_small'
-    mus_start = 1
-    mus_end = 1
+    ijv_type = 'small_to_large'
+    mus_start = 830
+    mus_end = 1225
     NA_enable = 1  # 0 no NA, 1 consider NA
     NA = 0.22
     runningNum = 0  # (Integer or False)self.session

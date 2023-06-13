@@ -100,8 +100,8 @@ def gen_surrogate_result(bloodConc:list, used_SO2:list, mus:dict, mua:dict, trai
         
         
 if __name__ == "__main__":
-    train_num = 10000
-    test_num = 200
+    train_num = 1000
+    test_num = 20
     
     #%train data
     total_num = 10

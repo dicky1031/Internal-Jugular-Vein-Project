@@ -226,7 +226,7 @@ if __name__ == "__main__":
 
     result_folder = "kb"
     subject = "kb"
-    ijv_type = "large_to_small"
+    ijv_type = "small_to_large"
     mus_start = 1
     mus_end = 1
 

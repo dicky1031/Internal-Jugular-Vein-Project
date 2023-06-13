@@ -215,10 +215,11 @@ $RECYCLE.BIN/
 *.lnk
 
 
-# avoid upload .jnii .jdat
+# avoid upload .jnii .jdat testfile
 *.jnii
 *.jdat
 dataset
 model_save
+bin
 
 # End of https://www.toptal.com/developers/gitignore/api/python,windows,git
