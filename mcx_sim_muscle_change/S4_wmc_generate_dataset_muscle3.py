@@ -56,7 +56,7 @@ class post_processing:
                                       list(mua_set[:, 4]),  # CCA mua
                                       list(mua_set[:, 2]),  # musle mua10%
                                       list(mua_set[:, 2]),  # musle mua5%
-                                      list(mua_set[:, 2]),  # musle mua3%
+                                      list(mua_set[:, 7]),  # musle mua3%
                                       list(mua_set[:, 7])  # musle mua1%
                                       ])
         elif self.ID.find("large_to_small") != -1:
@@ -72,7 +72,7 @@ class post_processing:
                                       list(mua_set[:, 4]),  # CCA mua
                                       list(mua_set[:, 2]),  # musle mua10%
                                       list(mua_set[:, 2]),  # musle mua5%
-                                      list(mua_set[:, 2]),  # musle mua3%
+                                      list(mua_set[:, 7]),  # musle mua3%
                                       list(mua_set[:, 7])  # musle mua1%
                                       ])
         else:
@@ -166,49 +166,49 @@ if __name__ == "__main__":
     mus_types = ['high', 'medium', 'low']
     result_folder = "kb"
     subject = "kb"
-    ijv_type = "small_to_large"
+    ijv_types = ["small_to_large", "large_to_small"]
     mus_start = 1
     mus_end = 20
-    
-    for mus_type in mus_types:
-        ID = os.path.join("dataset", result_folder, f"{subject}_ijv_{ijv_type}", 'low')
-        ijv_size = ijv_type.split("_")[0]
-        datasetpath = f"{subject}_dataset_{ijv_size}"
-        os.makedirs(os.path.join("dataset", result_folder,
-                    datasetpath, mus_type), exist_ok=True)
+    for ijv_type in ijv_types:
+        for mus_type in mus_types:
+            ID = os.path.join("result", result_folder, f"{subject}_ijv_{ijv_type}", 'low')
+            ijv_size = ijv_type.split("_")[0]
+            datasetpath = f"{subject}_dataset_{ijv_size}_muslce_3"
+            os.makedirs(os.path.join("result", result_folder,
+                        datasetpath, mus_type), exist_ok=True)
 
-        processsor = post_processing(ID)
-        for mus_run_idx in tqdm(range(mus_start, mus_end+1)):
-            mua_set = np.load(os.path.join("OPs_used", f"{wavelength[mus_run_idx-1]}nm_mua_set.npy"))
-            mus_set = np.load(os.path.join("OPs_used", f"{mus_type}_mus_set.npy")) 
-            print(f"\n Now run mus_{mus_run_idx}")
-            photonNum, fiberSet, detOutputPathSet, detectorNum = processsor.get_data(
-                mus_run_idx)
-            used_mus = processsor.get_used_mus(mus_set, mus_run_idx)
-            used_mus = np.tile(np.array(used_mus), mua_set.shape[0]).reshape(
-                mua_set.shape[0], 5)
-            dataset_output = np.empty([mua_set.shape[0], 17+len(fiberSet)])
-            used_mua, bloodConc, used_SO2, muscle_SO2 = processsor.get_used_mua(mua_set)
-            
-            output_R = WMC(detOutputPathSet, detectorNum, used_SDS, used_mua)
-            
-            dataset_output[:, 17:] = cp.asnumpy(output_R)
-            used_mua = used_mua[3:]  # skin, fat, muscle, perturbed, IJV, CCA
-            used_mua = cp.concatenate([used_mua[:3], used_mua[4:]]).T
-            used_mua = cp.asnumpy(used_mua)
-            bloodConc = bloodConc.T
-            used_SO2 = used_SO2.T
-            muscle_SO2 = muscle_SO2.T
-            dataset_output[:, :17] = np.concatenate([used_mus, used_mua, bloodConc, used_SO2, muscle_SO2], axis=1)
-            np.save(os.path.join("dataset", result_folder, datasetpath, mus_type,
-                    f"{wavelength[mus_run_idx-1]}nm_mus_{mus_run_idx}.npy"), dataset_output)
-            col_mus = ['skin_mus', 'fat_mus', 'muscle_mus', 'ijv_mus', 'cca_mus']
-            col_mua = ['skin_mua', 'fat_mua', 'muscle_mua', 'ijv_mua', 'cca_mua', 'muscle10%_mua', 'muscle5%_mua', 'muscle3%_mua', 'muscle1%_mua', 'bloodConc', 'used_SO2', 'muscle_SO2']
-            col_SDS = [f'SDS_{i}' for i in range(len(fiberSet))]
-            col = col_mus + col_mua + col_SDS
-            dataset_output = pd.DataFrame(dataset_output, columns=col)
-            dataset_output.to_csv(os.path.join("dataset", result_folder, datasetpath, mus_type,
-                    f"{wavelength[mus_run_idx-1]}nm_mus_{mus_run_idx}.csv"), index=False)
+            processsor = post_processing(ID)
+            for mus_run_idx in tqdm(range(mus_start, mus_end+1)):
+                mua_set = np.load(os.path.join("OPs_used", f"{wavelength[mus_run_idx-1]}nm_mua_set.npy"))
+                mus_set = np.load(os.path.join("OPs_used", f"{mus_type}_mus_set.npy")) 
+                print(f"\n Now run mus_{mus_run_idx}")
+                photonNum, fiberSet, detOutputPathSet, detectorNum = processsor.get_data(
+                    mus_run_idx)
+                used_mus = processsor.get_used_mus(mus_set, mus_run_idx)
+                used_mus = np.tile(np.array(used_mus), mua_set.shape[0]).reshape(
+                    mua_set.shape[0], 5)
+                dataset_output = np.empty([mua_set.shape[0], 17+len(fiberSet)])
+                used_mua, bloodConc, used_SO2, muscle_SO2 = processsor.get_used_mua(mua_set)
+                
+                output_R = WMC(detOutputPathSet, detectorNum, used_SDS, used_mua)
+                
+                dataset_output[:, 17:] = cp.asnumpy(output_R)
+                used_mua = used_mua[3:]  # skin, fat, muscle, perturbed, IJV, CCA
+                used_mua = cp.concatenate([used_mua[:3], used_mua[4:]]).T
+                used_mua = cp.asnumpy(used_mua)
+                bloodConc = bloodConc.T
+                used_SO2 = used_SO2.T
+                muscle_SO2 = muscle_SO2.T
+                dataset_output[:, :17] = np.concatenate([used_mus, used_mua, bloodConc, used_SO2, muscle_SO2], axis=1)
+                np.save(os.path.join("result", result_folder, datasetpath, mus_type,
+                        f"{wavelength[mus_run_idx-1]}nm_mus_{mus_run_idx}.npy"), dataset_output)
+                col_mus = ['skin_mus', 'fat_mus', 'muscle_mus', 'ijv_mus', 'cca_mus']
+                col_mua = ['skin_mua', 'fat_mua', 'muscle_mua', 'ijv_mua', 'cca_mua', 'muscle10%_mua', 'muscle5%_mua', 'muscle3%_mua', 'muscle1%_mua', 'bloodConc', 'used_SO2', 'muscle_SO2']
+                col_SDS = [f'SDS_{i}' for i in range(len(fiberSet))]
+                col = col_mus + col_mua + col_SDS
+                dataset_output = pd.DataFrame(dataset_output, columns=col)
+                dataset_output.to_csv(os.path.join("result", result_folder, datasetpath, mus_type,
+                        f"{wavelength[mus_run_idx-1]}nm_mus_{mus_run_idx}.csv"), index=False)
             
             
 
