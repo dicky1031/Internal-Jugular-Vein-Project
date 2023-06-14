@@ -8,6 +8,7 @@ import sys
 # %% move to current file path
 os.chdir(sys.path[0])
 
+print(os.getcwd())
 # %%
 def save_prediction_input(prediction_input : pd, start : int, end : int):
     data = []
@@ -21,7 +22,7 @@ def save_prediction_input(prediction_input : pd, start : int, end : int):
             count += 1
     return data
 # %%
-muscle_types = ['muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
+muscle_types = ['muscle_1', 'muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
 # %%
 for muscle_type in muscle_types:
     os.makedirs(os.path.join('dataset', 'kb', f'low_scatter_prediction_input_{muscle_type}', 'low_absorption'), exist_ok=True)
@@ -50,13 +51,13 @@ for muscle_type in muscle_types:
     prediction_input = {}
 
     for i in range(len(wavelength)):
-        prediction_input[f'T1_large_{wavelength[i]}nm'] = []
+        prediction_input[f'large_{wavelength[i]}nm'] = []
     for i in range(len(wavelength)):
-        prediction_input[f'T1_small_{wavelength[i]}nm'] = []
-    for i in range(len(wavelength)):
-        prediction_input[f'T2_large_{wavelength[i]}nm'] = []
-    for i in range(len(wavelength)):
-        prediction_input[f'T2_small_{wavelength[i]}nm'] = []
+        prediction_input[f'small_{wavelength[i]}nm'] = []
+    # for i in range(len(wavelength)):
+    #     prediction_input[f'T2_large_{wavelength[i]}nm'] = []
+    # for i in range(len(wavelength)):
+    #     prediction_input[f'T2_small_{wavelength[i]}nm'] = []
     prediction_input['blc'] = []
     prediction_input['ijv_SO2_change'] = []
     prediction_input['id'] = []
@@ -87,10 +88,10 @@ for muscle_type in muscle_types:
                     R_T2_small_SDS1 = R_T2_small['SDS_1']
                     R_T2_small_SDS2 = R_T2_small['SDS_11']
                     
-                    prediction_input[f'T1_large_{wavelength[wl_idx]}nm'] += list(R_T1_large_SDS1/R_T1_large_SDS2)
-                    prediction_input[f'T1_small_{wavelength[wl_idx]}nm'] += list(R_T1_small_SDS1/R_T1_small_SDS2)
-                    prediction_input[f'T2_large_{wavelength[wl_idx]}nm'] += list(R_T2_large_SDS1/R_T2_large_SDS2)
-                    prediction_input[f'T2_small_{wavelength[wl_idx]}nm'] += list(R_T2_small_SDS1/R_T2_small_SDS2)
+                    prediction_input[f'large_{wavelength[wl_idx]}nm'] += list((R_T2_large_SDS1/R_T2_large_SDS2).to_numpy() - (R_T1_large_SDS1/R_T1_large_SDS2).to_numpy())
+                    prediction_input[f'small_{wavelength[wl_idx]}nm'] += list((R_T2_small_SDS1/R_T2_small_SDS2).to_numpy() - (R_T1_small_SDS1/R_T1_small_SDS2).to_numpy())
+                    # prediction_input[f'T2_large_{wavelength[wl_idx]}nm'] += list(R_T2_large_SDS1/R_T2_large_SDS2)
+                    # prediction_input[f'T2_small_{wavelength[wl_idx]}nm'] += list(R_T2_small_SDS1/R_T2_small_SDS2)
                     
                     # print(f'blc : {blc}, used_ijv_SO2 : {used_ijv_SO2}, used_muscle_SO2 : {used_muscle_SO2}, {R_T2.shape}')
     for blc in bloodConc:
@@ -99,10 +100,10 @@ for muscle_type in muscle_types:
                 if abs(used_ijv_SO2-based_ijv_SO2) < abs(used_muscle_SO2-based_muscle_SO2):
                     continue
                 prediction_input['blc'] += [blc]*20
-                prediction_input['ijv_SO2_change'] += [used_ijv_SO2]*20
+                prediction_input['ijv_SO2_change'] += [used_ijv_SO2-based_ijv_SO2]*20
                 prediction_input['id'] += [f'{count}_{i}' for i in range(20)]
                 count += 1
-                prediction_input['muscle_SO2_change'] += [used_muscle_SO2]*20
+                prediction_input['muscle_SO2_change'] += [used_muscle_SO2-based_muscle_SO2]*20
 
 
     prediction_input = pd.DataFrame(prediction_input)

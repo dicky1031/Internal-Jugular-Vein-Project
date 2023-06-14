@@ -16,16 +16,16 @@ class myDataset(Dataset):
         self.id = []
         self.muscle_SO2 = []
         for file in self.files:
-            datas = np.load(file)
+            datas = np.load(file, allow_pickle=True)
             for data in datas:
-                self.x.append(data[:81])
-                self.y.append(data[[81,83]])
-                self.id.append(data[82])
-                self.muscle_SO2.append(data[83])
-        self.x = np.array(self.x)
-        self.y = np.array(self.y)
+                self.x.append(data[:40])
+                self.y.append(data[[41]])
+                self.id.append(data[42])
+                self.muscle_SO2.append(data[43])
+        self.x = np.array(self.x, dtype=np.float64)
+        self.y = np.array(self.y, dtype=np.float64)
         self.id = np.array(self.id)
-        self.muscle_SO2 = np.array(self.muscle_SO2)
+        self.muscle_SO2 = np.array(self.muscle_SO2, dtype=np.float64)
         
         # self.x[:, 80] = (self.x[:, 80] - min(bloodConc)) / (max(bloodConc) - min(bloodConc)) # normalize blc to 0~1
         self.x = torch.from_numpy(self.x)

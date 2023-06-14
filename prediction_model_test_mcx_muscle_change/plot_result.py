@@ -9,9 +9,11 @@ from scipy import stats
 import pandas as pd
 import seaborn as sns
 from statannotations.Annotator import Annotator
+import sys
+os.chdir(sys.path[0])
 
 # %%
-result_folder = "PredictionModel_test_muscle_1"
+result_folder = "prediction_model2_formula2"
 
 # %%
 os.makedirs(os.path.join("pic", result_folder), exist_ok=True)

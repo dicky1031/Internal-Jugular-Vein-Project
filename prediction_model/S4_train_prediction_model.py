@@ -68,13 +68,13 @@ def test(trlog,ep,min_loss):
 
 
 if __name__ == "__main__":
-    train_num = 1000
-    test_num = 20
+    train_num = 10000
+    test_num = 200
     result_folder = "prediction_model2_formula2"
     #%%
-    EPOCH = 200
-    BATCH_SIZE = 64
-    lr=0.0001
+    EPOCH = 40
+    BATCH_SIZE = 512
+    lr=0.00005
     os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
     
     train_folder = os.path.join("dataset", "prediction_result", "train")

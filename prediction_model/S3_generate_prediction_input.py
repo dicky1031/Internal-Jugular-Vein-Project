@@ -21,7 +21,7 @@ def gen_prediction_input(num : int, train_or_test: str, SO2_used : list, outputp
     for id in range(num):
         print(f'now processing {train_or_test}_{id}...')
         for blc in bloodConc:
-            prediction_input = np.empty((len(SO2_used),4*len(wavelength)+3)) # T1_large_SDS1/SDS2 T1_small_SDS1/SDS2 T2_large_SDS1/SDS2 T2_small_SDS1/SDS2 bloodConc ans id
+            prediction_input = np.empty((len(SO2_used),2*len(wavelength)+3)) # T1_large_SDS1/SDS2 T1_small_SDS1/SDS2 T2_large_SDS1/SDS2 T2_small_SDS1/SDS2 bloodConc ans id
             for i, s in enumerate(SO2_used):
                 surrogate_result_T1 = pd.read_csv(os.path.join("dataset", "surrogate_result", train_or_test, 
                                                             f'bloodConc_{blc}', 'SO2_0.7', f'{id}_{train_or_test}.csv'))
@@ -34,11 +34,11 @@ def gen_prediction_input(num : int, train_or_test: str, SO2_used : list, outputp
                 prediction_input[i][40] = blc
                 prediction_input[i][41] = s-0.7 # answer
                 prediction_input[i][42] = id # for analyzing used
-            np.save(os.path.join("dataset", "prediction_result", train_or_test, f"{id}_blc_{blc}.npy"), prediction_input)
+            np.save(os.path.join("dataset", outputpath, train_or_test, f"{id}_blc_{blc}.npy"), prediction_input)
 
 if __name__ == "__main__":
-    train_num = 1000
-    test_num = 20
+    train_num = 10000
+    test_num = 200
     outputpath = 'prediction_result_formula2'
     #%%
     os.makedirs(os.path.join("dataset", outputpath, "train"), exist_ok=True)
