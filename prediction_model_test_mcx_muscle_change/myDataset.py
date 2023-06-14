@@ -6,7 +6,7 @@ import numpy as np
 
 
 class myDataset(Dataset):
-    def __init__(self, folder:str, num_of_id:int, bloodConc:list, num_of_blc:int, num_of_SO2:int, num_of_muscle_SO2:int):
+    def __init__(self, folder:str):
         super().__init__()
         self.folder = folder
         self.files = glob(os.path.join(self.folder, "*.npy"))

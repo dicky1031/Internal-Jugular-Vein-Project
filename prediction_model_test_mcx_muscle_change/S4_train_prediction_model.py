@@ -112,73 +112,28 @@ def test(model, test_loader):
 
 
 if __name__ == "__main__":
-    train_num = 500
-    test_num = 50
-    #%%
-    BATCH_SIZE = 128
-    EPOCH = 1000
-    lr = 0.0001
-    result_folder = "PredictionModel_train_yourself_2_output_large"
-    os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
-    
-    test_folder = os.path.join("dataset", "prediction_result", "test")
-    test_dataset = myDataset(test_folder, test_num, bloodConc, len(bloodConc), len(test_SO2), len(muscle_SO2))
-    print(f'test dataset size : {len(test_dataset)}')
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
-    torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
-    
-    # load model
-    model = PredictionModel().cuda()
-    # model.load_state_dict(torch.load(os.path.join("prediction_model", "prediction_model.pth")))
-
-    # train
-    train_folder = os.path.join("dataset", "prediction_result", "train")
-    train_dataset = myDataset(train_folder, train_num, bloodConc, len(bloodConc), len(test_SO2), len(muscle_SO2))
-    print(f'train dataset size : {len(train_dataset)}')
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    
-    # train_0
-    # train_dataset_temp = []
-    # for x,y,id,muscle_SO2 in train_dataset:
-    #     # muscle_SO2 = int(muscle_SO2*1000)
-    #     # print(muscle_SO2)
-    #     if int(muscle_SO2*1000) in [-5, -1, 0, 1, 5]:
-    #         train_dataset_temp.append((x,y,id,muscle_SO2))
-    # # train_folder = os.path.join("dataset", "prediction_result", "train")
-    # # train_dataset = myDataset(train_folder, train_num, bloodConc, len(bloodConc), len(train_SO2))
-    # print(f'train dataset size : {len(train_dataset_temp)}')
-    # train_loader = DataLoader(train_dataset_temp, batch_size=BATCH_SIZE, shuffle=True)
-    # print(f'train loader size : {len(train_loader)}')
-    
-
-    # # train model
-    start_time = time.time()
-    model = PredictionModel().cuda()
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    criterion = nn.MSELoss()
-    trlog = train(model, optimizer, criterion, train_loader, train_loader, EPOCH, BATCH_SIZE, lr)
-    end_time = time.time()
-    print(f'elapsed time : {end_time-start_time:.3f} sec')
-    trlog['elapsed_time'] = end_time-start_time
-    trlog['train_size'] = len(train_dataset)
-    trlog['test_size'] = len(test_dataset)
-
-    # save result 
-    with open(os.path.join("model_save", result_folder, "trlog.json"), 'w') as f:
-        json.dump(trlog, f, indent=4)  
-    torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
-    
+    #%% load pre-trained model
+    pretrained_model_folder = "PredictionModel_test_muscle_1"
     # load result
-    with open(os.path.join("model_save", result_folder, "trlog.json"), 'r') as f:
+    with open(os.path.join("model_save", pretrained_model_folder, "trlog.json"), 'r') as f:
         trlog = json.load(f)
-    
     # load model
     model = PredictionModel().cuda()
     model.load_state_dict(torch.load(trlog['best_model']))
 
+    BATCH_SIZE = 256
+    subject = 'kb'
+    dataset_folder = os.path.join("low_scatter_prediction_input_muscle_1", "all_absorption")
+    os.makedirs('model_test', exist_ok=True)
+    
+    test_folder = os.path.join("dataset", subject, dataset_folder)
+    test_dataset = myDataset(folder=test_folder)
+    print(f'test dataset size : {len(test_dataset)}')
+    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    torch.save(test_loader, os.path.join("model_test", pretrained_model_folder, 'test_loader.pth'))
     # test model
-    df = test(model, train_loader)  
-    df.to_csv(os.path.join("model_save", result_folder, "test.csv"), index=False)
+    df = test(model, test_loader)  
+    df.to_csv(os.path.join("model_test", pretrained_model_folder, "test.csv"), index=False)
             
             
         
