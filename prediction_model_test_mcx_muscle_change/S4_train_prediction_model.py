@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from ANN_models import PredictionModel, PredictionModel2
 from myDataset import myDataset
 import numpy as np
@@ -112,29 +112,40 @@ def test(model, test_loader):
 
 
 if __name__ == "__main__":
-    #%% load pre-trained model
-    pretrained_model_folder = "PredictionModel_test_muscle_1"
-    # load result
-    with open(os.path.join("model_save", pretrained_model_folder, "trlog.json"), 'r') as f:
-        trlog = json.load(f)
-    # load model
-    model = PredictionModel().cuda()
-    model.load_state_dict(torch.load(trlog['best_model']))
-
     BATCH_SIZE = 256
+    EPOCH = 20
+    lr = 0.0005
+    result_folder = 'prediction_model_formula2'
+    os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
     subject = 'kb'
-    dataset_folder = os.path.join("low_scatter_prediction_input_muscle_1", "all_absorption")
-    os.makedirs('model_test', exist_ok=True)
+    train_folder = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_0", "all_absorption")
+    test_folder = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_1", "all_absorption")
     
-    test_folder = os.path.join("dataset", subject, dataset_folder)
-    test_dataset = myDataset(folder=test_folder)
+    # train loader split to train loader and test loader
+    train_dataset = myDataset(train_folder)
+    train_size = int(0.8 * len(train_dataset))
+    test_size = len(train_dataset) - train_size
+    train_dataset, test_dataset = random_split(train_dataset, [train_size, test_size])
+    print(f'train dataset size : {len(train_dataset)}')
     print(f'test dataset size : {len(test_dataset)}')
+    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
-    torch.save(test_loader, os.path.join("model_test", pretrained_model_folder, 'test_loader.pth'))
-    # test model
-    df = test(model, test_loader)  
-    df.to_csv(os.path.join("model_test", pretrained_model_folder, "test.csv"), index=False)
-            
-            
-        
+    torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
+
+    # # train model
+    start_time = time.time()
+    model = PredictionModel2().cuda()
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    criterion = nn.MSELoss()
+    trlog = train(model, optimizer, criterion, train_loader, train_loader, EPOCH, BATCH_SIZE, lr)
+    end_time = time.time()
+    print(f'elapsed time : {end_time-start_time:.3f} sec')
+    trlog['elapsed_time'] = end_time-start_time
+    trlog['train_size'] = len(train_dataset)
+    trlog['test_size'] = len(test_dataset)
+
+    # save result 
+    with open(os.path.join("model_save", result_folder, "trlog.json"), 'w') as f:
+        json.dump(trlog, f, indent=4)  
+    torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
         
