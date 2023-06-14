@@ -97,7 +97,7 @@ for muscle_type in muscle_types:
                 
                 temp = list((R_T2_small_SDS1/R_T2_small_SDS2).to_numpy() - (R_T1_small_SDS1/R_T1_small_SDS2).to_numpy())
                 prediction_input_test[f'small_{wavelength[wl_idx]}nm'] += temp[0::2]
-                prediction_input_train[f'small_{wavelength[wl_idx]}nm'] += temp[0::2]
+                prediction_input_train[f'small_{wavelength[wl_idx]}nm'] += temp[1::2]
                 # prediction_input[f'T2_large_{wavelength[wl_idx]}nm'] += list(R_T2_large_SDS1/R_T2_large_SDS2)
                 # prediction_input[f'T2_small_{wavelength[wl_idx]}nm'] += list(R_T2_small_SDS1/R_T2_small_SDS2)
                 
