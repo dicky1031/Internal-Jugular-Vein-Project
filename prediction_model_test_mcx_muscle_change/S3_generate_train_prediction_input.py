@@ -83,11 +83,11 @@ for muscle_type in muscle_types:
                 R_T1_small_SDS1 = R_T1_small['SDS_1']
                 R_T1_small_SDS2 = R_T1_small['SDS_11']
                 
-                R_T2_large = dataset_large[(dataset_large['bloodConc']==blc) & (dataset_large['used_SO2']==used_ijv_SO2) & (dataset_large['muscle_SO2']==used_muscle_SO2)]
+                R_T2_large = dataset_large[(dataset_large['bloodConc']==blc) & (dataset_large['used_SO2']==used_ijv_SO2) & (dataset_large['muscle_SO2']==based_muscle_SO2)]
                 R_T2_large_SDS1 = R_T2_large['SDS_1']
                 R_T2_large_SDS2 = R_T2_large['SDS_11']
                 
-                R_T2_small = dataset_small[(dataset_small['bloodConc']==blc) & (dataset_small['used_SO2']==used_ijv_SO2) & (dataset_small['muscle_SO2']==used_muscle_SO2)]
+                R_T2_small = dataset_small[(dataset_small['bloodConc']==blc) & (dataset_small['used_SO2']==used_ijv_SO2) & (dataset_small['muscle_SO2']==based_muscle_SO2)]
                 R_T2_small_SDS1 = R_T2_small['SDS_1']
                 R_T2_small_SDS2 = R_T2_small['SDS_11']
                 
@@ -104,19 +104,16 @@ for muscle_type in muscle_types:
                 # print(f'blc : {blc}, used_ijv_SO2 : {used_ijv_SO2}, used_muscle_SO2 : {used_muscle_SO2}, {R_T2.shape}')
     for blc in bloodConc:
         for used_ijv_SO2 in test_SO2:
-            for used_muscle_SO2 in muscle_SO2:
-                if abs(used_ijv_SO2-based_ijv_SO2) < abs(used_muscle_SO2-based_muscle_SO2):
-                    continue
-                prediction_input_test['blc'] += [blc]*10
-                prediction_input_test['ijv_SO2_change'] += [used_ijv_SO2-based_ijv_SO2]*10
-                prediction_input_test['id'] += [f'{count}_{i}' for i in range(10)]
-                prediction_input_test['muscle_SO2_change'] += [0.0]*10
-                
-                prediction_input_train['blc'] += [blc]*10
-                prediction_input_train['ijv_SO2_change'] += [used_ijv_SO2-based_ijv_SO2]*10
-                prediction_input_train['id'] += [f'{count}_{i}' for i in range(10)]
-                prediction_input_train['muscle_SO2_change'] += [0.0]*10
-                count += 1
+            prediction_input_test['blc'] += [blc]*10
+            prediction_input_test['ijv_SO2_change'] += [used_ijv_SO2-based_ijv_SO2]*10
+            prediction_input_test['id'] += [f'{count}_{i}' for i in range(10)]
+            prediction_input_test['muscle_SO2_change'] += [0.0]*10
+            
+            prediction_input_train['blc'] += [blc]*10
+            prediction_input_train['ijv_SO2_change'] += [used_ijv_SO2-based_ijv_SO2]*10
+            prediction_input_train['id'] += [f'{count}_{i}' for i in range(10)]
+            prediction_input_train['muscle_SO2_change'] += [0.0]*10
+            count += 1
 
     prediction_input_test = pd.DataFrame(prediction_input_test)
     prediction_input_test.to_csv(os.path.join('dataset', 'kb', f'low_scatter_prediction_input_{muscle_type}_test', 'all_absorption', 'prediction_input_test.csv'), index=False)
