@@ -22,7 +22,7 @@ def save_prediction_input(prediction_input : pd, start : int, end : int):
             count += 1
     return data
 # %%
-muscle_types = ['muscle_1', 'muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
+muscle_types = ['muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
 # %%
 for muscle_type in muscle_types:
     os.makedirs(os.path.join('dataset', 'kb', f'low_scatter_prediction_input_{muscle_type}', 'low_absorption'), exist_ok=True)

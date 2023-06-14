@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 from ANN_models import PredictionModel, PredictionModel2
 from myDataset import myDataset
 import numpy as np
@@ -118,20 +118,20 @@ if __name__ == "__main__":
     result_folder = 'prediction_model_formula2'
     os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
     subject = 'kb'
-    train_folder = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_0", "all_absorption")
-    test_folder = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_1", "all_absorption")
+    train_folder = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_0_train", "all_absorption")
+    test_folder = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_0_test", "all_absorption")
     
-    # train loader split to train loader and test loader
+    # train loader 
     train_dataset = myDataset(train_folder)
-    train_size = int(0.8 * len(train_dataset))
-    test_size = len(train_dataset) - train_size
-    train_dataset, test_dataset = random_split(train_dataset, [train_size, test_size])
     print(f'train dataset size : {len(train_dataset)}')
-    print(f'test dataset size : {len(test_dataset)}')
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+    
+    # test loader 
+    test_dataset = myDataset(test_folder)
+    print(f'test dataset size : {len(test_dataset)}')
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
     torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
-
+    
     # # train model
     start_time = time.time()
     model = PredictionModel2().cuda()
