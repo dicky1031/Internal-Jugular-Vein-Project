@@ -113,7 +113,7 @@ def test(model, test_loader):
 
 if __name__ == "__main__":
     BATCH_SIZE = 256
-    EPOCH = 100
+    EPOCH = 500
     lr = 0.0005
     result_folder = 'prediction_model2_formula2'
     os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
@@ -159,4 +159,8 @@ if __name__ == "__main__":
     with open(os.path.join("model_save", result_folder, "trlog.json"), 'w') as f:
         json.dump(trlog, f, indent=4)  
     torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
+    
+    # test model
+    df = test(model, test_loader)  
+    df.to_csv(os.path.join("model_save", result_folder, "test.csv"), index=False)
         

@@ -118,13 +118,15 @@ for mus_type in mus_types:
                 prediction_input_train['muscle_SO2_change'] += [0.0]*10
                 count += 1
 
-        prediction_input_test = pd.DataFrame(prediction_input_test)
-        prediction_input_test.to_csv(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'all_absorption', 'prediction_input_test.csv'), index=False)
-        all_prediction_input_test = prediction_input_test.to_numpy()
-        np.save(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'all_absorption', 'prediction_input_test.npy'), all_prediction_input_test)
+        if mus_type == 'low':
+            prediction_input_test = pd.DataFrame(prediction_input_test)
+            prediction_input_test.to_csv(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'all_absorption', 'prediction_input_test.csv'), index=False)
+            all_prediction_input_test = prediction_input_test.to_numpy()
+            np.save(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'all_absorption', 'prediction_input_test.npy'), all_prediction_input_test)
         
-        prediction_input_train = pd.DataFrame(prediction_input_train)
-        prediction_input_train.to_csv(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'all_absorption', 'prediction_input_train.csv'), index=False)
-        all_prediction_input_train = prediction_input_train.to_numpy()
-        np.save(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'all_absorption', 'prediction_input_train.npy'), all_prediction_input_train)
+        else:
+            prediction_input_train = pd.DataFrame(prediction_input_train)
+            prediction_input_train.to_csv(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'all_absorption', 'prediction_input_train.csv'), index=False)
+            all_prediction_input_train = prediction_input_train.to_numpy()
+            np.save(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'all_absorption', 'prediction_input_train.npy'), all_prediction_input_train)
 
