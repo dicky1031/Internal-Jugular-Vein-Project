@@ -101,11 +101,11 @@ def test(model, test_loader):
     
     df = pd.DataFrame({'id': list(id_used),
                        'output_ijv_SO2' : list(all_output[:,0]),
-                       'output_muscle_SO2' : list(all_output[:,1]),
+                    #    'output_muscle_SO2' : list(all_output[:,1]),
                        'target_ijv_SO2' : list(all_target[:,0]),
-                       'target_muscle_SO2' : list(all_target[:,1]),
+                    #    'target_muscle_SO2' : list(all_target[:,1]),
                        'error_ijv_SO2' : list(error[:,0]),
-                       'error_muscle_SO2' : list(error[:,1]),
+                    #    'error_muscle_SO2' : list(error[:,1]),
                        'muscle_mua_change' : list(np.round(10*muscle_mua_chage_used)/10)})
     
     return df
