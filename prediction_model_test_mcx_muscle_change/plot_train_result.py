@@ -5,7 +5,8 @@ import os
 import json
 import torch
 import numpy as np
-
+import sys
+os.chdir(sys.path[0])
 # %%
 result_folder = "prediction_model2_formula2"
 
@@ -22,7 +23,7 @@ model.load_state_dict(torch.load(config['best_model']))
 model.eval()
 
 # %%
-for batch_idx, (data,target, parameters) in enumerate(test_loader):
+for batch_idx, (data,target, parameters, _) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
     output = output.detach().cpu().numpy()
@@ -47,7 +48,7 @@ plt.savefig(os.path.join("pic", result_folder, "RMSE.png"), dpi=300, format='png
 plt.show()
 
 # %%
-for batch_idx, (data,target, parameters) in enumerate(test_loader):
+for batch_idx, (data,target, parameters, _) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
     output = output.detach().cpu().numpy()

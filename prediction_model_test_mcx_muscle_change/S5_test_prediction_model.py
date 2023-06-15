@@ -47,42 +47,48 @@ def test(model, test_loader):
     
     df = pd.DataFrame({'id': list(id_used),
                        'output_ijv_SO2' : list(all_output[:,0]),
-                       'output_muscle_SO2' : list(all_output[:,1]),
+                    #    'output_muscle_SO2' : list(all_output[:,1]),
                        'target_ijv_SO2' : list(all_target[:,0]),
-                       'target_muscle_SO2' : list(all_target[:,1]),
+                    #    'target_muscle_SO2' : list(all_target[:,1]),
                        'error_ijv_SO2' : list(error[:,0]),
-                       'error_muscle_SO2' : list(error[:,1]),
+                    #    'error_muscle_SO2' : list(error[:,1]),
                        'muscle_mua_change' : list(np.round(10*muscle_mua_chage_used)/10)})
     
     return df
 
 
 if __name__ == "__main__":
-    #%% 
-    pretrained_model_folder = "prediction_model_formula2"
+    #%% load pre-trained model
+    pretrained_model_folder = "prediction_model2_formula2"
     BATCH_SIZE = 256
-    result_folder = os.path.join("low_scatter_prediction_input_muscle_1", "all_absorption")
-    os.makedirs(os.path.join("model_test", result_folder), exist_ok=True)
-    subject = 'kb'
-    test_folder = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_1", "all_absorption")
-    
-    # load pre-trained model
     # load result
     with open(os.path.join("model_save", pretrained_model_folder, "trlog.json"), 'r') as f:
         trlog = json.load(f)
     # load model
-    model = PredictionModel().cuda()
+    model = PredictionModel2().cuda()
     model.load_state_dict(torch.load(trlog['best_model']))
     
-    # test loader 
-    test_dataset = myDataset(folder=test_folder)
-    print(f'test dataset size : {len(test_dataset)}')
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
-    torch.save(test_loader, os.path.join("model_test", result_folder, 'test_loader.pth'))
+    mus_types = ['low', 'high', 'medium']
+    mua_types = ['all', 'low', 'high', 'medium']
+    muscle_types = ['muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
     
-    # test model
-    df = test(model, test_loader)  
-    df.to_csv(os.path.join("model_test", result_folder, "test.csv"), index=False)
+    for muscle_type in muscle_types:
+        for mus_type in mus_types:
+            for mua_type in mua_types:
+                result_folder = os.path.join(f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption")
+                os.makedirs(os.path.join("model_test", result_folder), exist_ok=True)
+                subject = 'kb'
+                test_folder = os.path.join("dataset", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption")
+                
+                # test loader 
+                test_dataset = myDataset(folder=test_folder)
+                print(f'test dataset size : {len(test_dataset)}')
+                test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+                torch.save(test_loader, os.path.join("model_test", result_folder, 'test_loader.pth'))
+                
+                # test model
+                df = test(model, test_loader)  
+                df.to_csv(os.path.join("model_test", result_folder, "test.csv"), index=False)
             
             
         

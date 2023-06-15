@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, ConcatDataset
 from ANN_models import PredictionModel, PredictionModel2
 from myDataset import myDataset
 import numpy as np
@@ -113,23 +113,34 @@ def test(model, test_loader):
 
 if __name__ == "__main__":
     BATCH_SIZE = 256
-    EPOCH = 20
+    EPOCH = 100
     lr = 0.0005
-    result_folder = 'prediction_model_formula2'
+    result_folder = 'prediction_model2_formula2'
     os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
     subject = 'kb'
-    train_folder = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_0_train", "all_absorption")
-    test_folder = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_0_test", "all_absorption")
+    train_folder_low = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_0_train", "all_absorption")
+    train_folder_medium = os.path.join("dataset", subject, "medium_scatter_prediction_input_muscle_0_train", "all_absorption")
+    train_folder_high = os.path.join("dataset", subject, "high_scatter_prediction_input_muscle_0_train", "all_absorption")
+    
+    test_folder_low = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_0_test", "all_absorption")
+    test_folder_medium = os.path.join("dataset", subject, "medium_scatter_prediction_input_muscle_0_test", "all_absorption")
+    test_folder_high = os.path.join("dataset", subject, "high_scatter_prediction_input_muscle_0_test", "all_absorption")
     
     # train loader 
-    train_dataset = myDataset(train_folder)
-    print(f'train dataset size : {len(train_dataset)}')
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+    train_dataset_low = myDataset(train_folder_low)
+    train_dataset_medium = myDataset(train_folder_medium)
+    train_dataset_high = myDataset(train_folder_high)
+    train_dev_sets = ConcatDataset([train_dataset_low, train_dataset_medium, train_dataset_high])
+    print(f'train dataset size : {len(train_dev_sets)}')
+    train_loader = DataLoader(train_dev_sets, batch_size=BATCH_SIZE, shuffle=True)
     
     # test loader 
-    test_dataset = myDataset(test_folder)
-    print(f'test dataset size : {len(test_dataset)}')
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    test_dataset_low = myDataset(test_folder_low)
+    test_dataset_medium = myDataset(test_folder_medium)
+    test_dataset_high = myDataset(test_folder_high)
+    test_dev_sets = ConcatDataset([test_dataset_low, test_dataset_medium, test_dataset_high])
+    print(f'test dataset size : {len(test_dev_sets)}')
+    test_loader = DataLoader(test_dev_sets, batch_size=BATCH_SIZE, shuffle=False)
     torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
     
     # # train model
@@ -141,8 +152,8 @@ if __name__ == "__main__":
     end_time = time.time()
     print(f'elapsed time : {end_time-start_time:.3f} sec')
     trlog['elapsed_time'] = end_time-start_time
-    trlog['train_size'] = len(train_dataset)
-    trlog['test_size'] = len(test_dataset)
+    trlog['train_size'] = len(train_dev_sets)
+    trlog['test_size'] = len(test_dev_sets)
 
     # save result 
     with open(os.path.join("model_save", result_folder, "trlog.json"), 'w') as f:
