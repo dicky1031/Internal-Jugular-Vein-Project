@@ -4,8 +4,8 @@ import shutil
 import json
 import numpy as np
 import sys
-result_folder = "kb"
-subject = "kb"
+result_folder = "ctchen"
+subject = "ctchen"
 PhotonNum = 1e9
 
 # %% move to current file path

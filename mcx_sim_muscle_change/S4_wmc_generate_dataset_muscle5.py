@@ -164,8 +164,8 @@ if __name__ == "__main__":
         wavelength = json.load(f) 
         wavelength = wavelength['wavelength']
     mus_types = ['high', 'medium', 'low']
-    result_folder = "kb"
-    subject = "kb"
+    result_folder = "ctchen"
+    subject = "ctchen"
     ijv_types = ["small_to_large", "large_to_small"]
     mus_start = 1
     mus_end = 20
