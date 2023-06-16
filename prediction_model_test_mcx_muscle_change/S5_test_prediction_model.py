@@ -70,7 +70,8 @@ if __name__ == "__main__":
     
     mus_types = ['low', 'high', 'medium']
     mua_types = ['all', 'low', 'high', 'medium']
-    muscle_types = ['muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
+    # muscle_types = ['muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
+    muscle_types = ['muscle_0', 'muscle_uniform']
     
     for muscle_type in muscle_types:
         for mus_type in mus_types:

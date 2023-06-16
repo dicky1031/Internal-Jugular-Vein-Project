@@ -6,6 +6,10 @@ import json
 import torch
 import numpy as np
 import sys
+import matplotlib as mpl
+# Default settings
+mpl.rcParams.update(mpl.rcParamsDefault)
+plt.style.use("seaborn-darkgrid")
 os.chdir(sys.path[0])
 # %%
 result_folder = "prediction_model2_formula2"

@@ -10,6 +10,10 @@ import pandas as pd
 import seaborn as sns
 from statannotations.Annotator import Annotator
 import sys
+import matplotlib as mpl
+# Default settings
+mpl.rcParams.update(mpl.rcParamsDefault)
+plt.style.use("seaborn-darkgrid")
 os.chdir(sys.path[0])
 
 # %%

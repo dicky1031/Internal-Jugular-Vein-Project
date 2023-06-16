@@ -35,7 +35,8 @@ def save_prediction_input(prediction_input : pd, start : int, end : int):
             count += 1
     return data
 # %%
-muscle_types = ['muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
+# muscle_types = ['muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
+muscle_types = ['muscle_0','muscle_uniform']
 mus_types = ['low', 'medium', 'high']
 # %%
 for mus_type in mus_types:
