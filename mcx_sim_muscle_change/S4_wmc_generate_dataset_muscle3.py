@@ -171,10 +171,10 @@ if __name__ == "__main__":
     mus_end = 20
     for ijv_type in ijv_types:
         for mus_type in mus_types:
-            ID = os.path.join("result", result_folder, f"{subject}_ijv_{ijv_type}", 'low')
+            ID = os.path.join("dataset", result_folder, f"{subject}_ijv_{ijv_type}", 'low')
             ijv_size = ijv_type.split("_")[0]
             datasetpath = f"{subject}_dataset_{ijv_size}_muslce_3"
-            os.makedirs(os.path.join("result", result_folder,
+            os.makedirs(os.path.join("dataset", result_folder,
                         datasetpath, mus_type), exist_ok=True)
 
             processsor = post_processing(ID)
@@ -200,14 +200,14 @@ if __name__ == "__main__":
                 used_SO2 = used_SO2.T
                 muscle_SO2 = muscle_SO2.T
                 dataset_output[:, :17] = np.concatenate([used_mus, used_mua, bloodConc, used_SO2, muscle_SO2], axis=1)
-                np.save(os.path.join("result", result_folder, datasetpath, mus_type,
+                np.save(os.path.join("dataset", result_folder, datasetpath, mus_type,
                         f"{wavelength[mus_run_idx-1]}nm_mus_{mus_run_idx}.npy"), dataset_output)
                 col_mus = ['skin_mus', 'fat_mus', 'muscle_mus', 'ijv_mus', 'cca_mus']
                 col_mua = ['skin_mua', 'fat_mua', 'muscle_mua', 'ijv_mua', 'cca_mua', 'muscle10%_mua', 'muscle5%_mua', 'muscle3%_mua', 'muscle1%_mua', 'bloodConc', 'used_SO2', 'muscle_SO2']
                 col_SDS = [f'SDS_{i}' for i in range(len(fiberSet))]
                 col = col_mus + col_mua + col_SDS
                 dataset_output = pd.DataFrame(dataset_output, columns=col)
-                dataset_output.to_csv(os.path.join("result", result_folder, datasetpath, mus_type,
+                dataset_output.to_csv(os.path.join("dataset", result_folder, datasetpath, mus_type,
                         f"{wavelength[mus_run_idx-1]}nm_mus_{mus_run_idx}.csv"), index=False)
             
             

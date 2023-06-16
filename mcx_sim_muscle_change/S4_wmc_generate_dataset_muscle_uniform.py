@@ -125,7 +125,7 @@ def WMC(detOutputPathSet, detectorNum, used_SDS, used_mua):
             #     reflectance[detOutputIdx][detectorIdx] = cp.exp(-ppath[head_idx:split_idx,:]@used_mua).sum() / photonNum
 
             # batch ppath for GPU use
-            max_memory = 1000
+            max_memory = 500
             if ppath.shape[0] > max_memory:
                 for idx, ppath_idx in enumerate(range(0, ppath.shape[0]//max_memory)):
                     if idx == 0:
