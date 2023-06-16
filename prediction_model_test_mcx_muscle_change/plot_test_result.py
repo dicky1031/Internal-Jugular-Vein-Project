@@ -50,7 +50,7 @@ def convert_pvalue_to_asterisks(pvalue):
 # %%
 mus_types = ['low', 'high', 'medium']
 mua_types = ['all', 'low', 'high', 'medium']
-muscle_types = ['muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
+muscle_types = ['muscle_0', 'muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
 
 for muscle_type in muscle_types:
     for mus_type in mus_types:
@@ -98,7 +98,7 @@ for muscle_type in muscle_types:
             plt.xlabel("muscle SO2 change(%)")
             plt.ylabel("error(prediction - true)")
             plt.savefig(os.path.join("pic", result_folder, f"muscle_change_{muscle_mua_change}_boxplot.png"), dpi=300, format='png', bbox_inches='tight')
-            plt.show()
+            # plt.show()
 
 
             # %%
@@ -119,6 +119,6 @@ for muscle_type in muscle_types:
                 plt.ylabel("predict $\u0394$SO2")
                 plt.legend(loc=(1.01,0.8))
                 plt.savefig(os.path.join("pic", result_folder, f"muscle_change_{muscle_mua_change}_RMSE_ijv.png"), dpi=300, format='png', bbox_inches='tight')
-                plt.show()
+                # plt.show()
 
 
