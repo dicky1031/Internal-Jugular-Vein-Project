@@ -25,18 +25,19 @@ with open(os.path.join('OPs_used', "muscle_SO2.json"), 'r') as f:
 # %%
 muscle_types = ['muscle_0']
 mus_types = ['low', 'medium', 'high']
+subject = 'ctchen'
 # %%
 for mus_type in mus_types:
     for muscle_type in muscle_types:
-        os.makedirs(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'low_absorption'), exist_ok=True)
-        os.makedirs(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'medium_absorption'), exist_ok=True)
-        os.makedirs(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'high_absorption'), exist_ok=True)
-        os.makedirs(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'all_absorption'), exist_ok=True)
+        os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'low_absorption'), exist_ok=True)
+        os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'medium_absorption'), exist_ok=True)
+        os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'high_absorption'), exist_ok=True)
+        os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'all_absorption'), exist_ok=True)
         
-        os.makedirs(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'low_absorption'), exist_ok=True)
-        os.makedirs(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'medium_absorption'), exist_ok=True)
-        os.makedirs(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'high_absorption'), exist_ok=True)
-        os.makedirs(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'all_absorption'), exist_ok=True)
+        os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'low_absorption'), exist_ok=True)
+        os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'medium_absorption'), exist_ok=True)
+        os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'high_absorption'), exist_ok=True)
+        os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'all_absorption'), exist_ok=True)
 
         
 
@@ -74,8 +75,8 @@ for mus_type in mus_types:
 
         count = 0
         for wl_idx in range(len(wavelength)):
-            dataset_large = pd.read_csv(os.path.join('dataset', 'kb', f'kb_dataset_large_{muscle_type}', f'{mus_type}', f'{wavelength[wl_idx]}nm_mus_{wl_idx+1}.csv'))
-            dataset_small = pd.read_csv(os.path.join('dataset', 'kb', f'kb_dataset_small_{muscle_type}', f'{mus_type}', f'{wavelength[wl_idx]}nm_mus_{wl_idx+1}.csv'))
+            dataset_large = pd.read_csv(os.path.join('dataset', subject, f'kb_dataset_large_{muscle_type}', f'{mus_type}', f'{wavelength[wl_idx]}nm_mus_{wl_idx+1}.csv'))
+            dataset_small = pd.read_csv(os.path.join('dataset', subject, f'kb_dataset_small_{muscle_type}', f'{mus_type}', f'{wavelength[wl_idx]}nm_mus_{wl_idx+1}.csv'))
             for blc in bloodConc:
                 for used_ijv_SO2 in test_SO2:
                     R_T1_large = dataset_large[(dataset_large['bloodConc']==blc) & (dataset_large['used_SO2']==based_ijv_SO2) & (dataset_large['muscle_SO2']==based_muscle_SO2)]
@@ -120,13 +121,13 @@ for mus_type in mus_types:
 
         if mus_type == 'low':
             prediction_input_test = pd.DataFrame(prediction_input_test)
-            prediction_input_test.to_csv(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'all_absorption', 'prediction_input_test.csv'), index=False)
+            prediction_input_test.to_csv(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'all_absorption', 'prediction_input_test.csv'), index=False)
             all_prediction_input_test = prediction_input_test.to_numpy()
-            np.save(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'all_absorption', 'prediction_input_test.npy'), all_prediction_input_test)
+            np.save(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_test', 'all_absorption', 'prediction_input_test.npy'), all_prediction_input_test)
         
         else:
             prediction_input_train = pd.DataFrame(prediction_input_train)
-            prediction_input_train.to_csv(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'all_absorption', 'prediction_input_train.csv'), index=False)
+            prediction_input_train.to_csv(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'all_absorption', 'prediction_input_train.csv'), index=False)
             all_prediction_input_train = prediction_input_train.to_numpy()
-            np.save(os.path.join('dataset', 'kb', f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'all_absorption', 'prediction_input_train.npy'), all_prediction_input_train)
+            np.save(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}_train', 'all_absorption', 'prediction_input_train.npy'), all_prediction_input_train)
 

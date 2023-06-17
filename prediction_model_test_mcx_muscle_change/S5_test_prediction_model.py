@@ -70,26 +70,25 @@ if __name__ == "__main__":
     
     mus_types = ['low', 'high', 'medium']
     mua_types = ['all', 'low', 'high', 'medium']
-    # muscle_types = ['muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
-    muscle_types = ['muscle_0', 'muscle_uniform']
+    muscle_types = ['muscle_0', 'muscle_1', 'muscle_3', 'muscle_5', 'muscle_10', 'muscle_uniform']
     
     for muscle_type in muscle_types:
         for mus_type in mus_types:
             for mua_type in mua_types:
                 result_folder = os.path.join(f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption")
-                os.makedirs(os.path.join("model_test", result_folder), exist_ok=True)
-                subject = 'kb'
+                subject = 'ctchen'
+                os.makedirs(os.path.join("model_test", subject, result_folder), exist_ok=True)
                 test_folder = os.path.join("dataset", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption")
                 
                 # test loader 
                 test_dataset = myDataset(folder=test_folder)
                 print(f'test dataset size : {len(test_dataset)}')
                 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
-                torch.save(test_loader, os.path.join("model_test", result_folder, 'test_loader.pth'))
+                torch.save(test_loader, os.path.join("model_test", subject, result_folder, 'test_loader.pth'))
                 
                 # test model
                 df = test(model, test_loader)  
-                df.to_csv(os.path.join("model_test", result_folder, "test.csv"), index=False)
+                df.to_csv(os.path.join("model_test", subject, result_folder, "test.csv"), index=False)
             
             
         

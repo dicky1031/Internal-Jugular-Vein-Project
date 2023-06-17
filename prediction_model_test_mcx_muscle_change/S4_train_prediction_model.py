@@ -70,8 +70,8 @@ def train_test(trlog,ep,min_loss, test_loader):
     
     if min_loss > ts_loss/len(test_loader):
         min_loss = ts_loss/len(test_loader)
-        trlog['best_model'] = os.path.join("model_save",result_folder,f"ep_{ep}_loss_{min_loss}.pth")
-        torch.save(model.state_dict(), os.path.join("model_save",result_folder,f"ep_{ep}_loss_{min_loss}.pth"))
+        trlog['best_model'] = os.path.join("model_save", subject, result_folder,f"ep_{ep}_loss_{min_loss}.pth")
+        torch.save(model.state_dict(), os.path.join("model_save", subject, result_folder,f"ep_{ep}_loss_{min_loss}.pth"))
             
     return min_loss
 
@@ -116,8 +116,8 @@ if __name__ == "__main__":
     EPOCH = 500
     lr = 0.0005
     result_folder = 'prediction_model2_formula2'
-    os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
-    subject = 'kb'
+    subject = 'ctchen'
+    os.makedirs(os.path.join("model_save", subject, result_folder), exist_ok=True)
     train_folder_low = os.path.join("dataset", subject, "low_scatter_prediction_input_muscle_0_train", "all_absorption")
     train_folder_medium = os.path.join("dataset", subject, "medium_scatter_prediction_input_muscle_0_train", "all_absorption")
     train_folder_high = os.path.join("dataset", subject, "high_scatter_prediction_input_muscle_0_train", "all_absorption")
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     test_dev_sets = ConcatDataset([test_dataset_low, test_dataset_medium, test_dataset_high])
     print(f'test dataset size : {len(test_dev_sets)}')
     test_loader = DataLoader(test_dev_sets, batch_size=BATCH_SIZE, shuffle=False)
-    torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
+    torch.save(test_loader, os.path.join("model_save", subject, result_folder, 'test_loader.pth'))
     
     # # train model
     start_time = time.time()
@@ -156,11 +156,11 @@ if __name__ == "__main__":
     trlog['test_size'] = len(test_dev_sets)
 
     # save result 
-    with open(os.path.join("model_save", result_folder, "trlog.json"), 'w') as f:
+    with open(os.path.join("model_save", subject, result_folder, "trlog.json"), 'w') as f:
         json.dump(trlog, f, indent=4)  
-    torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
+    torch.save(test_loader, os.path.join("model_save", subject, result_folder, 'test_loader.pth'))
     
     # test model
     df = test(model, test_loader)  
-    df.to_csv(os.path.join("model_save", result_folder, "test.csv"), index=False)
+    df.to_csv(os.path.join("model_save", subject, result_folder, "test.csv"), index=False)
         
