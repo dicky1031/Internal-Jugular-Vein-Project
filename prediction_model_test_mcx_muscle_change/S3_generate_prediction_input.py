@@ -66,8 +66,8 @@ for mus_type in mus_types:
 
         count = 0
         for wl_idx in range(len(wavelength)):
-            dataset_large = pd.read_csv(os.path.join('dataset', subject, f'kb_dataset_large_{muscle_type}', f'{mus_type}', f'{wavelength[wl_idx]}nm_mus_{wl_idx+1}.csv'))
-            dataset_small = pd.read_csv(os.path.join('dataset', subject, f'kb_dataset_small_{muscle_type}', f'{mus_type}', f'{wavelength[wl_idx]}nm_mus_{wl_idx+1}.csv'))
+            dataset_large = pd.read_csv(os.path.join('dataset', subject, f'{subject}_dataset_large_{muscle_type}', f'{mus_type}', f'{wavelength[wl_idx]}nm_mus_{wl_idx+1}.csv'))
+            dataset_small = pd.read_csv(os.path.join('dataset', subject, f'{subject}_dataset_small_{muscle_type}', f'{mus_type}', f'{wavelength[wl_idx]}nm_mus_{wl_idx+1}.csv'))
             for blc in bloodConc:
                 for used_ijv_SO2 in test_SO2:
                     for used_muscle_SO2 in muscle_SO2:
