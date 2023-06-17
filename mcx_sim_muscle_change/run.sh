@@ -1,3 +1,5 @@
+python3 S4_wmc_generate_dataset_muscle_uniform.py
+python3 S4_wmc_generate_dataset_muscle0.py
 python3 S4_wmc_generate_dataset_muscle1.py
 python3 S4_wmc_generate_dataset_muscle3.py
 python3 S4_wmc_generate_dataset_muscle5.py

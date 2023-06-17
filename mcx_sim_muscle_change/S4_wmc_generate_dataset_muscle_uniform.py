@@ -125,7 +125,7 @@ def WMC(detOutputPathSet, detectorNum, used_SDS, used_mua):
             #     reflectance[detOutputIdx][detectorIdx] = cp.exp(-ppath[head_idx:split_idx,:]@used_mua).sum() / photonNum
 
             # batch ppath for GPU use
-            max_memory = 500
+            max_memory = 1000
             if ppath.shape[0] > max_memory:
                 for idx, ppath_idx in enumerate(range(0, ppath.shape[0]//max_memory)):
                     if idx == 0:
@@ -164,8 +164,8 @@ if __name__ == "__main__":
         wavelength = json.load(f) 
         wavelength = wavelength['wavelength']
     mus_types = ['high', 'medium', 'low']
-    result_folder = "kb"
-    subject = "kb"
+    result_folder = "ctchen"
+    subject = "ctchen"
     ijv_types = ["small_to_large", "large_to_small"]
     mus_start = 1
     mus_end = 20
