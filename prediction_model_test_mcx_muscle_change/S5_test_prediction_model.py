@@ -83,6 +83,7 @@ if __name__ == "__main__":
                 
                 # test loader 
                 test_dataset = myDataset(folder=test_folder)
+                print(f'{muscle_type}, {mus_type}, {mua_type}')
                 print(f'test dataset size : {len(test_dataset)}')
                 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
                 torch.save(test_loader, os.path.join("model_test", subject, result_folder, 'test_loader.pth'))
