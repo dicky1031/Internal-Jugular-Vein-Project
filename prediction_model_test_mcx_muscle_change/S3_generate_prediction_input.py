@@ -41,6 +41,7 @@ subject = 'ctchen'
 # %%
 for mus_type in mus_types:
     for muscle_type in muscle_types:
+        print(f'Now processing mus_type : {mus_type}, muscle_type : {muscle_type} ...')
         os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}', 'low_absorption'), exist_ok=True)
         os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}', 'medium_absorption'), exist_ok=True)
         os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}', 'high_absorption'), exist_ok=True)
