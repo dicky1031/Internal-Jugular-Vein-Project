@@ -173,7 +173,7 @@ if __name__ == "__main__":
         for mus_type in mus_types:
             ID = os.path.join("dataset", result_folder, f"{subject}_ijv_{ijv_type}", 'low')
             ijv_size = ijv_type.split("_")[0]
-            datasetpath = f"{subject}_dataset_{ijv_size}_muslce_3"
+            datasetpath = f"{subject}_dataset_{ijv_size}_muscle_3"
             os.makedirs(os.path.join("dataset", result_folder,
                         datasetpath, mus_type), exist_ok=True)
 

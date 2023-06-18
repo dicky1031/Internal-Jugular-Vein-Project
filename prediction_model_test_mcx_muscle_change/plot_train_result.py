@@ -35,6 +35,7 @@ model.load_state_dict(torch.load(config['best_model']))
 model.eval()
 
 # %%
+plt.figure()
 for batch_idx, (data,target, parameters, _) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
@@ -57,9 +58,11 @@ plt.title(f"based on SO2=70% \nmean error:{mean:.2f}% std:{std:.2f}% \nmax error
 plt.xlabel("truth $\u0394$SO2")
 plt.ylabel("predict $\u0394$SO2")
 plt.savefig(os.path.join("pic", subject, result_folder, "RMSE_all_metrics.png"), dpi=300, format='png', bbox_inches='tight')
-plt.show()
+plt.close()
+# plt.show()
 
 #%%
+plt.figure()
 for batch_idx, (data,target, parameters, _) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
@@ -90,7 +93,8 @@ plt.ylabel("predict $\u0394$SO2(%)")
 plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5),
           fancybox=True, shadow=True)
 plt.savefig(os.path.join("pic", subject, result_folder, "RMSE.png"), dpi=300, format='png', bbox_inches='tight')
-plt.show()
+plt.close()
+# plt.show()
 
 #%%
 table = {}
@@ -121,6 +125,7 @@ accumulate_std1 = np.array(accumulate_std1)*100
 accumulate_std2 = np.array(accumulate_std2)*100
 accumulate_x = np.array(accumulate_x)*100
 
+plt.figure()
 plt.fill_between(accumulate_x, accumulate_x+accumulate_std1, accumulate_x+accumulate_std2, color='b', alpha=0.3, edgecolor=None, label='predict')
 plt.plot(accumulate_x,accumulate_x, 'b', label='optimal')
 plt.title(f"based on SO2=70% \n RMSE:{RMSE:.2f}% $R^{2}$:{R_square:.3f}")
@@ -129,7 +134,8 @@ plt.ylabel("predict $\u0394$SO2(%)")
 plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5),
           fancybox=True, shadow=True)
 plt.savefig(os.path.join("pic", subject, result_folder, "RMSE_fill_plot.png"), dpi=300, format='png', bbox_inches='tight')
-plt.show()
+plt.close()
+# plt.show()
 
 # %%
 for batch_idx, (data,target, parameters, _) in enumerate(test_loader):
@@ -156,6 +162,7 @@ plt.ylabel('count')
 plt.title('error histogram')
 plt.legend()
 plt.savefig(os.path.join("pic", subject, result_folder, "hist.png"), dpi=300, format='png', bbox_inches='tight')
-plt.show()
+plt.close()
+# plt.show()
 
 

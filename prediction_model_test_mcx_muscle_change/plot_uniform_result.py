@@ -89,6 +89,7 @@ plt.legend(loc='center left', bbox_to_anchor=(1.05, 1),
 plt.tight_layout()
 plt.savefig(os.path.join("pic", subject, result_folder, "individual.png"), dpi=300, format='png', bbox_inches='tight')
 plt.show()
+plt.close()
 
 # %%
 table = [['muscle_type', 'RMSE(%)', 'R_square'] ]
@@ -117,6 +118,7 @@ print(tabulate(table, headers='firstrow', tablefmt='latex'))
 muscle_SO2
 
 # %%
+plt.figure()
 for muscle_type in muscle_types:
     count = 0
     for mus_type in mus_types:
@@ -143,8 +145,10 @@ plt.legend(loc='center left', bbox_to_anchor=(1, 0.5),
           fancybox=True, shadow=True)
 plt.savefig(os.path.join("pic", subject, result_folder, "all_muscle.png"), dpi=300, format='png', bbox_inches='tight')
 plt.show()
+plt.close()
 
 # %%
+plt.figure()
 for muscle_type in muscle_types:
     count = 0
     for mus_type in mus_types:
@@ -171,5 +175,6 @@ plt.legend(loc='center left', bbox_to_anchor=(1, 0.5),
           fancybox=True, shadow=True)
 plt.savefig(os.path.join("pic", subject, result_folder, "all.png"), dpi=300, format='png', bbox_inches='tight')
 plt.show()
+plt.close()
 
 

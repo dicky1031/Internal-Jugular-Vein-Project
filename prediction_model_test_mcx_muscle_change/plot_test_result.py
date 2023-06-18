@@ -99,6 +99,7 @@ for muscle_type in muscle_types:
             plt.xlabel("muscle SO2 change(%)")
             plt.ylabel("error(prediction - true)")
             plt.savefig(os.path.join("pic", subject, result_folder, f"muscle_change_{muscle_mua_change}_boxplot.png"), dpi=300, format='png', bbox_inches='tight')
+            plt.close()
             # plt.show()
 
 
@@ -120,6 +121,7 @@ for muscle_type in muscle_types:
                 plt.ylabel("predict $\u0394$SO2")
                 plt.legend(loc=(1.01,0.8))
                 plt.savefig(os.path.join("pic", subject, result_folder, f"muscle_change_{muscle_mua_change}_RMSE_ijv.png"), dpi=300, format='png', bbox_inches='tight')
+                plt.close()
                 # plt.show()
 
 
