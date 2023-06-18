@@ -61,8 +61,9 @@ if __name__ == "__main__":
     #%% load pre-trained model
     pretrained_model_folder = "prediction_model2_formula2"
     BATCH_SIZE = 256
+    subject = 'ctchen'
     # load result
-    with open(os.path.join("model_save", pretrained_model_folder, "trlog.json"), 'r') as f:
+    with open(os.path.join("model_save", subject, pretrained_model_folder, "trlog.json"), 'r') as f:
         trlog = json.load(f)
     # load model
     model = PredictionModel2().cuda()
@@ -76,7 +77,7 @@ if __name__ == "__main__":
         for mus_type in mus_types:
             for mua_type in mua_types:
                 result_folder = os.path.join(f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption")
-                subject = 'ctchen'
+                
                 os.makedirs(os.path.join("model_test", subject, result_folder), exist_ok=True)
                 test_folder = os.path.join("dataset", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption")
                 
