@@ -165,4 +165,41 @@ plt.savefig(os.path.join("pic", subject, result_folder, "hist.png"), dpi=300, fo
 plt.close()
 # plt.show()
 
-
+# %%
+table = {}
+for batch_idx, (data,target, parameters, muscle_SO2) in enumerate(test_loader):
+    for idx, single_muscle_SO2 in enumerate(muscle_SO2):
+        table[float(single_muscle_SO2.numpy())] = 0
+    data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
+    output = model(data)
+    output = output.detach().cpu().numpy()
+    target = target.detach().cpu().numpy()
+    for i in range(target.shape[0]):
+        table[int(target[i]*100)] = []
+            
+for batch_idx, (data,target, parameters, muscle_SO2) in enumerate(test_loader):
+    data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
+    output = model(data)
+    output = output.detach().cpu().numpy()
+    target = target.detach().cpu().numpy()
+    for i in range(target.shape[0]):
+        table[int(target[i]*100)].append(list(100*(output[i] - target[i]))[0])
+        
+for key in table.keys():
+    error = table[key]
+    error = np.array(error)
+    mean = np.mean(error)
+    std = np.std(error)
+    RMSE = np.sqrt(np.mean(np.square(error)))
+    plt.figure()
+    n,bin, pack = plt.hist(error, bins=50)
+    plt.vlines([mean+2*std, mean-2*std], 0, max(n), 'r', label='$\mu$$\pm$2*$\sigma$')
+    plt.text(mean+2*std, max(n), f'{mean+2*std:.2f}%')
+    plt.text(mean-2*std, max(n), f'{mean-2*std:.2f}%')
+    plt.xlabel('error(prediction-true)')
+    plt.ylabel('count')
+    plt.title(f'IJV_SO2 = {key}%, RMSE = {RMSE:.2f}%')
+    plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5))
+    plt.savefig(os.path.join("pic", subject, result_folder, f"{key}%_hist.png"), dpi=300, format='png', bbox_inches='tight')
+    plt.close()
+    # plt.show()
