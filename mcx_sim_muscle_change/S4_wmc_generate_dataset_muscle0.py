@@ -171,7 +171,7 @@ if __name__ == "__main__":
     mus_end = 20
     for ijv_type in ijv_types:
         for mus_type in mus_types:
-            ID = os.path.join("dataset", result_folder, f"{subject}_ijv_{ijv_type}", 'low')
+            ID = os.path.join("dataset", result_folder, f"{subject}_ijv_{ijv_type}", mus_type)
             ijv_size = ijv_type.split("_")[0]
             datasetpath = f"{subject}_dataset_{ijv_size}_muscle_0"
             os.makedirs(os.path.join("dataset", result_folder,
