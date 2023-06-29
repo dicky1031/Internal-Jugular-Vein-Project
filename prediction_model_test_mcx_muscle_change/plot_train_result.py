@@ -36,7 +36,7 @@ model.eval()
 
 # %%
 plt.figure()
-for batch_idx, (data,target, parameters, _) in enumerate(test_loader):
+for batch_idx, (data,target, _, _, _) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
     output = output.detach().cpu().numpy()
@@ -63,7 +63,7 @@ plt.close()
 
 #%%
 plt.figure()
-for batch_idx, (data,target, parameters, _) in enumerate(test_loader):
+for batch_idx, (data,target, _, _, _) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
     output = output.detach().cpu().numpy()
@@ -138,7 +138,7 @@ plt.close()
 # plt.show()
 
 # %%
-for batch_idx, (data,target, parameters, _) in enumerate(test_loader):
+for batch_idx, (data,target, _, _, _) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
     output = output.detach().cpu().numpy()
@@ -167,7 +167,7 @@ plt.close()
 
 # %%
 table = {}
-for batch_idx, (data,target, parameters, muscle_SO2) in enumerate(test_loader):
+for batch_idx, (data,target, _,_, muscle_SO2) in enumerate(test_loader):
     for idx, single_muscle_SO2 in enumerate(muscle_SO2):
         table[float(single_muscle_SO2.numpy())] = 0
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
@@ -177,7 +177,7 @@ for batch_idx, (data,target, parameters, muscle_SO2) in enumerate(test_loader):
     for i in range(target.shape[0]):
         table[int(target[i]*100)] = []
             
-for batch_idx, (data,target, parameters, muscle_SO2) in enumerate(test_loader):
+for batch_idx, (data,target, _,_, muscle_SO2) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
     output = output.detach().cpu().numpy()

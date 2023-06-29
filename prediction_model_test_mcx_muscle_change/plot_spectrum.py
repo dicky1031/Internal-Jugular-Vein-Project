@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib as mpl
 import json
 import sys
+from joblib import Parallel, delayed
 # Default settings
 mpl.rcParams.update(mpl.rcParamsDefault)
 os.chdir(sys.path[0])
@@ -22,7 +23,7 @@ muscle_types = ['muscle_0', 'muscle_1', 'muscle_3', 'muscle_5', 'muscle_10'] # w
 short_SDS = 'SDS_1'
 long_SDS = 'SDS_12'
 subject = 'ctchen'
-top_k = 20
+top_k = 10
 for muscle_type in muscle_types:
     for mus_type in mus_types:
         for mua_type in mua_types:
@@ -41,10 +42,17 @@ def plot_top_k_large_error_delta_OD(test_result, prediction_input, top_k,  muscl
         top_k_error_index = top_k_error.index
         for pic_id, error_idx in enumerate(top_k_error_index):
                 error = test_result.iloc[error_idx]['error_ijv_SO2']
-                used_id = test_result[test_result['error_ijv_SO2'] == error]['id']
-                used_id = str(used_id)
-                used_id = used_id.split()[1]
-                dataset = prediction_input[prediction_input['id'] == used_id].to_numpy()
+                used_id = test_result[test_result['error_ijv_SO2'] == error].iloc[0]['id']
+                used_mua_rank = test_result[test_result['error_ijv_SO2'] == error].iloc[0]['mua_rank']
+                used_id = int(used_id)
+                used_mua_rank = int(used_mua_rank)
+                # used_id = int(used_id)
+                # used_mua_rank = int(used_mua_rank)
+                # print(test_result[test_result['error_ijv_SO2'] == error].iloc[0]['id'])
+                # print(used_mua_rank)
+                # print(error)
+                # used_id = used_id.split()[1]
+                dataset = prediction_input[(prediction_input['id'] == used_id) & (prediction_input['mua_rank'] == used_mua_rank)].to_numpy()
                 dataset = dataset.reshape(-1)
                 now_ijv_SO2 = dataset[41]*100
                 now_muscle_SO2 = dataset[-1]*100
@@ -67,10 +75,13 @@ def plot_top_k_small_error_delta_OD(test_result, prediction_input, top_k,  muscl
         top_k_error_index = top_k_error.index
         for pic_id, error_idx in enumerate(top_k_error_index):
                 error = test_result.iloc[error_idx]['error_ijv_SO2']
-                used_id = test_result[test_result['error_ijv_SO2'] == error]['id']
-                used_id = str(used_id)
-                used_id = used_id.split()[1]
-                dataset = prediction_input[prediction_input['id'] == used_id].to_numpy()
+                used_id = test_result[test_result['error_ijv_SO2'] == error].iloc[0]['id']
+                used_mua_rank = test_result[test_result['error_ijv_SO2'] == error].iloc[0]['mua_rank']
+                used_id = int(used_id)
+                used_mua_rank = int(used_mua_rank)
+                # used_id = str(used_id)
+                # used_id = used_id.split()[1]
+                dataset = prediction_input[(prediction_input['id'] == used_id) & (prediction_input['mua_rank'] == used_mua_rank)].to_numpy()
                 dataset = dataset.reshape(-1)
                 now_ijv_SO2 = dataset[41]*100
                 now_muscle_SO2 = dataset[-1]*100
@@ -87,27 +98,46 @@ def plot_top_k_small_error_delta_OD(test_result, prediction_input, top_k,  muscl
                 plt.close()
                 # plt.show()
 
+def get_spec(subject, muscle_type, mus_type, wl, idx, used_blc, based_ijv_SO2, based_muscle_SO2, used_ijv_SO2, used_muscle_SO2, used_mua_rank):
+    origin_dataset_large = pd.read_csv(os.path.join("dataset", subject, f"{subject}_dataset_large_{muscle_type}", f"{mus_type}", f"{wl}nm_mus_{idx+1}.csv"))
+    origin_dataset_small = pd.read_csv(os.path.join("dataset", subject, f"{subject}_dataset_large_{muscle_type}", f"{mus_type}", f"{wl}nm_mus_{idx+1}.csv"))
+
+    # used_order = int(used_id.split('_')[-1])
+    large_T1_short_SDS_one = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][short_SDS]
+    large_T1_long_SDS_one = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][long_SDS]
+    large_T2_short_SDS_one = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][short_SDS]
+    large_T2_long_SDS_one = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][long_SDS]
+    small_T1_short_SDS_one = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][short_SDS]
+    small_T1_long_SDS_one = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][long_SDS]
+    small_T2_short_SDS_one = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][short_SDS]
+    small_T2_long_SDS_one = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][long_SDS]
+
+    return idx,large_T1_short_SDS_one, large_T1_long_SDS_one, large_T2_short_SDS_one, large_T2_long_SDS_one, small_T1_short_SDS_one, small_T1_long_SDS_one, small_T2_short_SDS_one, small_T2_long_SDS_one
+
 # %%
 def plot_top_k_large_error_spectrum(test_result, prediction_input, top_k,  muscle_type, mus_type, mua_type):
     top_k_error = abs(test_result['error_ijv_SO2']).nlargest(top_k)
     top_k_error_index = top_k_error.index
     for pic_id, error_idx in enumerate(top_k_error_index):
         error = test_result.iloc[error_idx]['error_ijv_SO2']
-        used_id = test_result[test_result['error_ijv_SO2'] == error]['id']
-        used_id = str(used_id)
-        used_id = used_id.split()[1]
-        dataset = prediction_input[prediction_input['id'] == used_id].to_numpy()
+        used_id = test_result[test_result['error_ijv_SO2'] == error].iloc[0]['id']
+        used_mua_rank = test_result[test_result['error_ijv_SO2'] == error].iloc[0]['mua_rank']
+        used_id = int(used_id)
+        used_mua_rank = int(used_mua_rank)
+        # used_id = str(used_id)
+        # used_id = used_id.split()[1]
+        dataset = prediction_input[(prediction_input['id'] == used_id) & (prediction_input['mua_rank'] == used_mua_rank)].to_numpy()
         dataset = dataset.reshape(-1)
         now_ijv_SO2 = dataset[41]*100
         now_muscle_SO2 = dataset[-1]*100
-        large_T1_short_SDS = []
-        large_T1_long_SDS = []
-        large_T2_short_SDS = []
-        large_T2_long_SDS = []
-        small_T1_short_SDS = []
-        small_T1_long_SDS = []
-        small_T2_short_SDS = []
-        small_T2_long_SDS = []
+        large_T1_short_SDS = [0 for _ in range(len(wavelength))]
+        large_T1_long_SDS = [0 for _ in range(len(wavelength))]
+        large_T2_short_SDS = [0 for _ in range(len(wavelength))]
+        large_T2_long_SDS = [0 for _ in range(len(wavelength))]
+        small_T1_short_SDS = [0 for _ in range(len(wavelength))]
+        small_T1_long_SDS = [0 for _ in range(len(wavelength))]
+        small_T2_short_SDS = [0 for _ in range(len(wavelength))]
+        small_T2_long_SDS = [0 for _ in range(len(wavelength))]
         
         based_ijv_SO2 = 0.7
         based_muscle_SO2 = 0.7
@@ -118,31 +148,46 @@ def plot_top_k_large_error_spectrum(test_result, prediction_input, top_k,  muscl
         used_muscle_SO2 = (prediction_input[prediction_input['id'] == used_id]['muscle_SO2_change'].iloc[0]) + based_muscle_SO2
         used_muscle_SO2 = f'{used_muscle_SO2:.2f}'
         used_muscle_SO2 = float(used_muscle_SO2)
+        all_params = []
         for idx, wl in enumerate(wavelength):
-            origin_dataset_large = pd.read_csv(os.path.join("dataset", subject, f"{subject}_dataset_large_{muscle_type}", f"{mus_type}", f"{wl}nm_mus_{idx+1}.csv"))
-            origin_dataset_small = pd.read_csv(os.path.join("dataset", subject, f"{subject}_dataset_large_{muscle_type}", f"{mus_type}", f"{wl}nm_mus_{idx+1}.csv"))
+            all_params.append((subject, muscle_type, mus_type, wl, idx, used_blc, based_ijv_SO2, based_muscle_SO2, used_ijv_SO2, used_muscle_SO2, used_mua_rank))
+            # origin_dataset_large = pd.read_csv(os.path.join("dataset", subject, f"{subject}_dataset_large_{muscle_type}", f"{mus_type}", f"{wl}nm_mus_{idx+1}.csv"))
+            # origin_dataset_small = pd.read_csv(os.path.join("dataset", subject, f"{subject}_dataset_large_{muscle_type}", f"{mus_type}", f"{wl}nm_mus_{idx+1}.csv"))
 
-            used_order = int(used_id.split('_')[-1])
-            large_T1_short_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_order][short_SDS])
-            large_T1_long_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_order][long_SDS])
-            large_T2_short_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_order][short_SDS])
-            large_T2_long_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_order][long_SDS])
-            small_T1_short_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_order][short_SDS])
-            small_T1_long_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_order][long_SDS])
-            small_T2_short_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_order][short_SDS])
-            small_T2_long_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_order][long_SDS])
+            # # used_order = int(used_id.split('_')[-1])
+            # large_T1_short_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][short_SDS])
+            # large_T1_long_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][long_SDS])
+            # large_T2_short_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][short_SDS])
+            # large_T2_long_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][long_SDS])
+            # small_T1_short_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][short_SDS])
+            # small_T1_long_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][long_SDS])
+            # small_T2_short_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][short_SDS])
+            # small_T2_long_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][long_SDS])
         
+        # idx,large_T1_short_SDS_one, large_T1_long_SDS_one, large_T2_short_SDS_one, large_T2_long_SDS_one, small_T1_short_SDS_one, small_T1_long_SDS_one, small_T2_short_SDS_one, small_T2_long_SDS_one
+        # param = (subject, muscle_type, mus_type, wl, idx, used_blc, based_ijv_SO2, based_muscle_SO2, used_ijv_SO2, used_muscle_SO2, used_mua_rank)
+        res = Parallel(n_jobs=-5)(delayed(get_spec)(*params) for params in all_params)
+        for idx,large_T1_short_SDS_one, large_T1_long_SDS_one, large_T2_short_SDS_one, large_T2_long_SDS_one, small_T1_short_SDS_one, small_T1_long_SDS_one, small_T2_short_SDS_one, small_T2_long_SDS_one in res:
+            large_T1_short_SDS[idx] = large_T1_short_SDS_one
+            large_T1_long_SDS[idx] = large_T1_long_SDS_one
+            large_T2_short_SDS[idx] = large_T2_short_SDS_one
+            large_T2_long_SDS[idx] = large_T2_long_SDS_one
+            small_T1_short_SDS[idx] = small_T1_short_SDS_one
+            small_T1_long_SDS[idx] = small_T1_long_SDS_one
+            small_T2_short_SDS[idx] = small_T2_short_SDS_one
+            small_T2_long_SDS[idx] = small_T2_long_SDS_one
+ 
         
-        temp1 = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_order]
-        temp1 = pd.DataFrame([temp1.values], columns=temp1.index)
-        temp2 = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_order]
-        temp2 = pd.DataFrame([temp2.values], columns=temp2.index)
-        temp3 = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_order]
-        temp3 = pd.DataFrame([temp3.values], columns=temp3.index)
-        temp4 = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_order]
-        temp4 = pd.DataFrame([temp4.values], columns=temp4.index)
-        OP_used = pd.concat((temp1,temp2,temp3,temp4))
-        OP_used.to_csv(os.path.join("pic", subject, "spectrum", muscle_type, mus_type, mua_type, 'top_k_large_error',  f"{pic_id}_spectrum.csv"), index=False)
+        # temp1 = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank]
+        # temp1 = pd.DataFrame([temp1.values], columns=temp1.index)
+        # temp2 = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank]
+        # temp2 = pd.DataFrame([temp2.values], columns=temp2.index)
+        # temp3 = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank]
+        # temp3 = pd.DataFrame([temp3.values], columns=temp3.index)
+        # temp4 = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank]
+        # temp4 = pd.DataFrame([temp4.values], columns=temp4.index)
+        # OP_used = pd.concat((temp1,temp2,temp3,temp4))
+        # OP_used.to_csv(os.path.join("pic", subject, "spectrum", muscle_type, mus_type, mua_type, 'top_k_large_error',  f"{pic_id}_spectrum.csv"), index=False)
         
         plt.figure()
         plt.plot(wavelength, large_T1_short_SDS, label='large_T1_short_SDS')
@@ -180,21 +225,24 @@ def plot_top_k_small_error_spectrum(test_result, prediction_input, top_k,  muscl
     top_k_error_index = top_k_error.index
     for pic_id, error_idx in enumerate(top_k_error_index):
         error = test_result.iloc[error_idx]['error_ijv_SO2']
-        used_id = test_result[test_result['error_ijv_SO2'] == error]['id']
-        used_id = str(used_id)
-        used_id = used_id.split()[1]
-        dataset = prediction_input[prediction_input['id'] == used_id].to_numpy()
+        used_id = test_result[test_result['error_ijv_SO2'] == error].iloc[0]['id']
+        used_mua_rank = test_result[test_result['error_ijv_SO2'] == error].iloc[0]['mua_rank']
+        used_id = int(used_id)
+        used_mua_rank = int(used_mua_rank)
+        # used_id = str(used_id)
+        # used_id = used_id.split()[1]
+        dataset = prediction_input[(prediction_input['id'] == used_id) & (prediction_input['mua_rank'] == used_mua_rank)].to_numpy()
         dataset = dataset.reshape(-1)
         now_ijv_SO2 = dataset[41]*100
         now_muscle_SO2 = dataset[-1]*100
-        large_T1_short_SDS = []
-        large_T1_long_SDS = []
-        large_T2_short_SDS = []
-        large_T2_long_SDS = []
-        small_T1_short_SDS = []
-        small_T1_long_SDS = []
-        small_T2_short_SDS = []
-        small_T2_long_SDS = []
+        large_T1_short_SDS = [0 for _ in range(len(wavelength))]
+        large_T1_long_SDS = [0 for _ in range(len(wavelength))]
+        large_T2_short_SDS = [0 for _ in range(len(wavelength))]
+        large_T2_long_SDS = [0 for _ in range(len(wavelength))]
+        small_T1_short_SDS = [0 for _ in range(len(wavelength))]
+        small_T1_long_SDS = [0 for _ in range(len(wavelength))]
+        small_T2_short_SDS = [0 for _ in range(len(wavelength))]
+        small_T2_long_SDS = [0 for _ in range(len(wavelength))]
         
         based_ijv_SO2 = 0.7
         based_muscle_SO2 = 0.7
@@ -205,30 +253,46 @@ def plot_top_k_small_error_spectrum(test_result, prediction_input, top_k,  muscl
         used_muscle_SO2 = (prediction_input[prediction_input['id'] == used_id]['muscle_SO2_change'].iloc[0]) + based_muscle_SO2
         used_muscle_SO2 = f'{used_muscle_SO2:.2f}'
         used_muscle_SO2 = float(used_muscle_SO2)
+        all_params = []
         for idx, wl in enumerate(wavelength):
-            origin_dataset_large = pd.read_csv(os.path.join("dataset", subject, f"{subject}_dataset_large_{muscle_type}", f"{mus_type}", f"{wl}nm_mus_{idx+1}.csv"))
-            origin_dataset_small = pd.read_csv(os.path.join("dataset", subject, f"{subject}_dataset_large_{muscle_type}", f"{mus_type}", f"{wl}nm_mus_{idx+1}.csv"))
+            all_params.append((subject, muscle_type, mus_type, wl, idx, used_blc, based_ijv_SO2, based_muscle_SO2, used_ijv_SO2, used_muscle_SO2, used_mua_rank))
+            # origin_dataset_large = pd.read_csv(os.path.join("dataset", subject, f"{subject}_dataset_large_{muscle_type}", f"{mus_type}", f"{wl}nm_mus_{idx+1}.csv"))
+            # origin_dataset_small = pd.read_csv(os.path.join("dataset", subject, f"{subject}_dataset_large_{muscle_type}", f"{mus_type}", f"{wl}nm_mus_{idx+1}.csv"))
 
-            used_order = int(used_id.split('_')[-1])
-            large_T1_short_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_order][short_SDS])
-            large_T1_long_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_order][long_SDS])
-            large_T2_short_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_order][short_SDS])
-            large_T2_long_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_order][long_SDS])
-            small_T1_short_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_order][short_SDS])
-            small_T1_long_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_order][long_SDS])
-            small_T2_short_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_order][short_SDS])
-            small_T2_long_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_order][long_SDS])
+            # # used_order = int(used_id.split('_')[-1])
+            # large_T1_short_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][short_SDS])
+            # large_T1_long_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][long_SDS])
+            # large_T2_short_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][short_SDS])
+            # large_T2_long_SDS.append(origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][long_SDS])
+            # small_T1_short_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][short_SDS])
+            # small_T1_long_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank][long_SDS])
+            # small_T2_short_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][short_SDS])
+            # small_T2_long_SDS.append(origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank][long_SDS])
         
-        temp1 = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_order]
-        temp1 = pd.DataFrame([temp1.values], columns=temp1.index)
-        temp2 = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_order]
-        temp2 = pd.DataFrame([temp2.values], columns=temp2.index)
-        temp3 = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_order]
-        temp3 = pd.DataFrame([temp3.values], columns=temp3.index)
-        temp4 = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_order]
-        temp4 = pd.DataFrame([temp4.values], columns=temp4.index)
-        OP_used = pd.concat((temp1,temp2,temp3,temp4))
-        OP_used.to_csv(os.path.join("pic", subject, "spectrum", muscle_type, mus_type, mua_type, 'top_k_small_error',  f"{pic_id}_spectrum.csv"), index=False)
+        # idx,large_T1_short_SDS_one, large_T1_long_SDS_one, large_T2_short_SDS_one, large_T2_long_SDS_one, small_T1_short_SDS_one, small_T1_long_SDS_one, small_T2_short_SDS_one, small_T2_long_SDS_one
+        # param = (subject, muscle_type, mus_type, wl, idx, used_blc, based_ijv_SO2, based_muscle_SO2, used_ijv_SO2, used_muscle_SO2, used_mua_rank)
+        res = Parallel(n_jobs=-5)(delayed(get_spec)(*params) for params in all_params)
+        for idx,large_T1_short_SDS_one, large_T1_long_SDS_one, large_T2_short_SDS_one, large_T2_long_SDS_one, small_T1_short_SDS_one, small_T1_long_SDS_one, small_T2_short_SDS_one, small_T2_long_SDS_one in res:
+            large_T1_short_SDS[idx] = large_T1_short_SDS_one
+            large_T1_long_SDS[idx] = large_T1_long_SDS_one
+            large_T2_short_SDS[idx] = large_T2_short_SDS_one
+            large_T2_long_SDS[idx] = large_T2_long_SDS_one
+            small_T1_short_SDS[idx] = small_T1_short_SDS_one
+            small_T1_long_SDS[idx] = small_T1_long_SDS_one
+            small_T2_short_SDS[idx] = small_T2_short_SDS_one
+            small_T2_long_SDS[idx] = small_T2_long_SDS_one
+ 
+        
+        # temp1 = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==based_ijv_SO2) & (origin_dataset_large['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank]
+        # temp1 = pd.DataFrame([temp1.values], columns=temp1.index)
+        # temp2 = origin_dataset_large[(origin_dataset_large['bloodConc']==used_blc) & (origin_dataset_large['used_SO2']==used_ijv_SO2) & (origin_dataset_large['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank]
+        # temp2 = pd.DataFrame([temp2.values], columns=temp2.index)
+        # temp3 = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==based_ijv_SO2) & (origin_dataset_small['muscle_SO2']==based_muscle_SO2)].iloc[used_mua_rank]
+        # temp3 = pd.DataFrame([temp3.values], columns=temp3.index)
+        # temp4 = origin_dataset_small[(origin_dataset_small['bloodConc']==used_blc) & (origin_dataset_small['used_SO2']==used_ijv_SO2) & (origin_dataset_small['muscle_SO2']==used_muscle_SO2)].iloc[used_mua_rank]
+        # temp4 = pd.DataFrame([temp4.values], columns=temp4.index)
+        # OP_used = pd.concat((temp1,temp2,temp3,temp4))
+        # OP_used.to_csv(os.path.join("pic", subject, "spectrum", muscle_type, mus_type, mua_type, 'top_k_large_error',  f"{pic_id}_spectrum.csv"), index=False)
         
         plt.figure()
         plt.plot(wavelength, large_T1_short_SDS, label='large_T1_short_SDS')

@@ -25,19 +25,21 @@ with open(os.path.join('OPs_used', "muscle_SO2.json"), 'r') as f:
 #%% Test Model
 def test(model, test_loader):
     model.eval()
-    for batch_idx, (data,target,id,muscle_mua_change) in enumerate(test_loader):
+    for batch_idx, (data, target, id, mua_rank, muscle_mua_change) in enumerate(test_loader):
         data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
         output = model(data)
         output = output.detach().cpu().numpy()
         target = target.detach().cpu().numpy()
         if batch_idx == 0:
             id_used = id
+            mua_rank_used = mua_rank
             all_output = 100*output
             all_target = 100*target
             error = 100*(output - target)
             muscle_mua_chage_used = 100*muscle_mua_change
         else:
             id_used = np.concatenate((id_used,id))
+            mua_rank_used = np.concatenate((mua_rank_used, mua_rank))
             all_output = np.concatenate((all_output, 100*output))
             all_target = np.concatenate((all_target, 100*target))
             error = np.concatenate((error, 100*(output - target)))
@@ -46,6 +48,7 @@ def test(model, test_loader):
             print(f"[test] batch:{batch_idx}/{len(test_loader)}({100*batch_idx/len(test_loader):.2f}%)")
     
     df = pd.DataFrame({'id': list(id_used),
+                       'mua_rank': list(mua_rank_used),
                        'output_ijv_SO2' : list(all_output[:,0]),
                     #    'output_muscle_SO2' : list(all_output[:,1]),
                        'target_ijv_SO2' : list(all_target[:,0]),

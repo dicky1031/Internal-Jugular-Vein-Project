@@ -4,7 +4,7 @@ import json
 import pandas as pd
 import numpy as np
 import sys
-
+from joblib import Parallel, delayed
 # %% move to current file path
 os.chdir(sys.path[0])
 
@@ -23,17 +23,17 @@ with open(os.path.join('OPs_used', "muscle_SO2.json"), 'r') as f:
     muscle_SO2 = json.load(f)
     muscle_SO2 = muscle_SO2['SO2']
 # %%
-def save_prediction_input(prediction_input : pd, start : int, end : int):
-    data = []
-    count = 0
-    for i in range(condition):
-        for r in range(start, end):
-            if count == 0:
-                data = prediction_input[prediction_input['id']==f"{i}_{r}"]
-            else:
-                data = pd.concat((data, prediction_input[prediction_input['id']==f"{i}_{r}"]))
-            count += 1
-    return data
+# def save_prediction_input(prediction_input : pd, start : int, end : int, condition : int):
+#     data = []
+#     count = 0
+#     for i in range(condition):
+#         for r in range(start, end):
+#             if count == 0:
+#                 data = prediction_input[prediction_input['id']==f"{i}_{r}"]
+#             else:
+#                 data = pd.concat((data, prediction_input[prediction_input['id']==f"{i}_{r}"]))
+#             count += 1
+#     return data
 # %%
 muscle_types = ['muscle_0', 'muscle_1', 'muscle_3', 'muscle_5', 'muscle_10', 'muscle_uniform']
 mus_types = ['low', 'medium', 'high']
@@ -41,6 +41,7 @@ subject = 'ctchen'
 # %%
 for mus_type in mus_types:
     for muscle_type in muscle_types:
+# def gen_precition_input(mus_type, muscle_type):        
         print(f'Now processing mus_type : {mus_type}, muscle_type : {muscle_type} ...')
         os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}', 'low_absorption'), exist_ok=True)
         os.makedirs(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}', 'medium_absorption'), exist_ok=True)
@@ -63,6 +64,7 @@ for mus_type in mus_types:
         prediction_input['blc'] = []
         prediction_input['ijv_SO2_change'] = []
         prediction_input['id'] = []
+        prediction_input['mua_rank'] = []
         prediction_input['muscle_SO2_change'] = []
 
         count = 0
@@ -103,7 +105,8 @@ for mus_type in mus_types:
                         continue
                     prediction_input['blc'] += [blc]*20
                     prediction_input['ijv_SO2_change'] += [used_ijv_SO2-based_ijv_SO2]*20
-                    prediction_input['id'] += [f'{count}_{i}' for i in range(20)]
+                    prediction_input['id'] += [count]*20
+                    prediction_input['mua_rank'] += [i for i in range(20)]
                     count += 1
                     prediction_input['muscle_SO2_change'] += [used_muscle_SO2-based_muscle_SO2]*20
 
@@ -115,19 +118,27 @@ for mus_type in mus_types:
         condition = count
 
         # %%
-        data = save_prediction_input(prediction_input, start=0, end=7)
+        # data = save_prediction_input(prediction_input, start=0, end=7, condition=condition)
+        data = prediction_input[prediction_input['mua_rank']<= 7]
         data.to_csv(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}', 'high_absorption', 'prediction_input.csv'), index=False)
         data = data.to_numpy()
         np.save(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}', 'high_absorption', 'prediction_input.npy'), data)
 
-        data = save_prediction_input(prediction_input, start=7, end=14)
+        # data = save_prediction_input(prediction_input, start=7, end=14, condition=condition)
+        data = prediction_input[(prediction_input['mua_rank']>7) & (prediction_input['mua_rank']<=14)]
         data.to_csv(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}', 'medium_absorption', 'prediction_input.csv'), index=False)
         data = data.to_numpy()
         np.save(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}', 'medium_absorption', 'prediction_input.npy'), data)
 
-        data = save_prediction_input(prediction_input, start=14, end=20)
+        # data = save_prediction_input(prediction_input, start=14, end=20, condition=condition)
+        data = prediction_input[(prediction_input['mua_rank']>14) & (prediction_input['mua_rank']<=20)]
         data.to_csv(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}', 'low_absorption', 'prediction_input.csv'), index=False)
         data = data.to_numpy()
         np.save(os.path.join('dataset', subject, f'{mus_type}_scatter_prediction_input_{muscle_type}', 'low_absorption', 'prediction_input.npy'), data)
 
+# products = []
+# for mus_type in mus_types:
+#     for muscle_type in muscle_types:
+#         products.append((mus_type,muscle_type))
 
+# Parallel(n_jobs=-5)(delayed(gen_precition_input)(mus_type, muscle_type) for mus_type, muscle_type in products)
