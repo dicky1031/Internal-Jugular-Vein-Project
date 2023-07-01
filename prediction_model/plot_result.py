@@ -5,7 +5,10 @@ import os
 import json
 import torch
 import numpy as np
-
+import matplotlib as mpl
+# Default settings
+mpl.rcParams.update(mpl.rcParamsDefault)
+plt.style.use("seaborn-darkgrid")
 # %%
 result_folder = "prediction_model_formula3"
 
@@ -21,30 +24,47 @@ model = PredictionModel3().cuda()
 model.load_state_dict(torch.load(config['best_model']))
 model.eval()
 
-# %%
-for batch_idx, (data,target, _,_,_) in enumerate(test_loader):
+def cal_R_square(y_true, y_pred):
+    y_bar = np.mean(y_true)
+    numerator = np.sum(np.square(y_true-y_pred))
+    denominator = np.sum(np.square(y_true-y_bar))
+    R_square = 1 - numerator/denominator
+    
+    return R_square
+#%%
+plt.figure()
+for batch_idx, (data,target, _, _, _) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
     output = output.detach().cpu().numpy()
     target = target.detach().cpu().numpy()
     if batch_idx == 0:
-        error = 100*np.abs(output - target)
-        RMSE = 100*(output - target)
+        error = 100*(output - target)
+        accumulate_RMSE = 100*(output - target)
+        accumulate_output = output
+        accumulate_target = target
     else:
-        error = np.concatenate((error, 100*np.abs(output - target)))
-        RMSE = np.concatenate((RMSE, 100*(output - target)))
-    plt.plot(target,output, 'r.', markersize=5)
-    plt.plot(target,target,'b')
+        error = np.concatenate((error, 100*(output - target)))
+        accumulate_RMSE = np.concatenate((accumulate_RMSE, 100*(output - target)))
+        accumulate_output = np.concatenate((accumulate_output, output))
+        accumulate_target = np.concatenate((accumulate_target, target))
+    if batch_idx == 0:
+        plt.plot(target*100,output*100, 'r.', markersize=5, label= 'predict')
+        plt.plot(target*100,target*100,'b', label = 'optimal')
+    else:
+        plt.plot(target*100,output*100, 'r.', markersize=5)
+        plt.plot(target*100,target*100,'b')
 
-RMSE = np.sqrt(np.mean(np.square(RMSE)))
-mean = np.mean(error)
-std = np.std(error)
-max_error = np.max(error)
-plt.title(f"based on SO2=70% \nmean error:{mean:.2f}% std:{std:.2f}% \nmax error:{max_error:.2f}% RMSE:{RMSE:.2f}%")
-plt.xlabel("truth $\u0394$SO2")
-plt.ylabel("predict $\u0394$SO2")
+RMSE = np.sqrt(np.mean(np.square(accumulate_RMSE)))
+R_square = cal_R_square(y_true=accumulate_target, y_pred=accumulate_output)
+plt.title(f"based on SO2=70% \n RMSE:{RMSE:.2f}% $R^{2}$:{R_square:.3f}")
+plt.xlabel("truth $\u0394$SO2(%)")
+plt.ylabel("predict $\u0394$SO2(%)")
+plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5),
+          fancybox=True, shadow=True)
 plt.savefig(os.path.join("pic", result_folder, "RMSE.png"), dpi=300, format='png', bbox_inches='tight')
-plt.show()
+plt.close()
+# plt.show()
 
 # %%
 for batch_idx, (data,target, _,_,_) in enumerate(test_loader):
