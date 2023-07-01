@@ -5,6 +5,7 @@ import os
 import json
 import torch
 import numpy as np
+import pandas as pd
 import matplotlib as mpl
 # Default settings
 mpl.rcParams.update(mpl.rcParamsDefault)
@@ -31,9 +32,25 @@ def cal_R_square(y_true, y_pred):
     R_square = 1 - numerator/denominator
     
     return R_square
+df = {'predic' : [], 'true' : [] , 'error' : []}
+for batch_idx, (data,target, _, _, _) in enumerate(test_loader):
+    data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
+    output = model(data)
+    output = output.detach().cpu().numpy()
+    target = target.detach().cpu().numpy()
+    for idx in range(output.shape[0]):
+        df['predic'].append(output[idx][0]*100)
+        df['true'].append(target[idx][0]*100)
+        df['error'].append(100*(output[idx][0] - target[idx][0]))
+
+df = pd.DataFrame(df)
+df.to_csv(os.path.join("pic", result_folder, "RMSE.csv"), index=False)
+        
+    
+
 #%%
 plt.figure()
-for batch_idx, (data,target, _, _, _) in enumerate(test_loader):
+for batch_idx, (data,target, _,_,_) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
     output = output.detach().cpu().numpy()
@@ -91,6 +108,7 @@ plt.ylabel('count')
 plt.title('error histogram')
 plt.legend()
 plt.savefig(os.path.join("pic", result_folder, "hist.png"), dpi=300, format='png', bbox_inches='tight')
-plt.show()
+plt.close()
+# plt.show()
 
 
