@@ -62,9 +62,11 @@ def test(model, test_loader):
 
 if __name__ == "__main__":
     #%% load pre-trained model
-    pretrained_model_folder = "prediction_model2_formula2"
+    pretrained_model_folder = "surrogate_prediction_result_formula2"
     BATCH_SIZE = 256
     subject = 'ctchen'
+    result = 'surrogate_formula2'
+    
     # load result
     with open(os.path.join("model_save", subject, pretrained_model_folder, "trlog.json"), 'r') as f:
         trlog = json.load(f)
@@ -81,7 +83,7 @@ if __name__ == "__main__":
             for mua_type in mua_types:
                 result_folder = os.path.join(f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption")
                 
-                os.makedirs(os.path.join("model_test", subject, result_folder), exist_ok=True)
+                os.makedirs(os.path.join("model_test", subject, result, result_folder), exist_ok=True)
                 test_folder = os.path.join("dataset", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption")
                 
                 # test loader 
@@ -89,11 +91,11 @@ if __name__ == "__main__":
                 print(f'{muscle_type}, {mus_type}, {mua_type}')
                 print(f'test dataset size : {len(test_dataset)}')
                 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
-                torch.save(test_loader, os.path.join("model_test", subject, result_folder, 'test_loader.pth'))
+                torch.save(test_loader, os.path.join("model_test", subject, result, result_folder, 'test_loader.pth'))
                 
                 # test model
                 df = test(model, test_loader)  
-                df.to_csv(os.path.join("model_test", subject, result_folder, "test.csv"), index=False)
+                df.to_csv(os.path.join("model_test", subject, result, result_folder, "test.csv"), index=False)
             
             
         

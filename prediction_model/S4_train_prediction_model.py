@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from ANN_models import PredictionModel, PredictionModel2
+from ANN_models import PredictionModel, PredictionModel2, PredictionModel3
 from myDataset import myDataset
 import time
 import json
@@ -29,7 +29,7 @@ def train(model, optimizer, criterion, train_loader, epoch, batch_size, lr):
     for ep in range(epoch):
         model.train()
         tr_loss = 0
-        for batch_idx, (data,target,_) in enumerate(train_loader):
+        for batch_idx, (data,target,_,_,_) in enumerate(train_loader):
             data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
             optimizer.zero_grad()
             output = model(data)
@@ -49,7 +49,7 @@ def train(model, optimizer, criterion, train_loader, epoch, batch_size, lr):
 def test(trlog,ep,min_loss):
     model.eval()
     ts_loss = 0
-    for batch_idx, (data,target,_) in enumerate(test_loader):
+    for batch_idx, (data,target,_,_,_) in enumerate(test_loader):
         data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
         optimizer.zero_grad()
         output = model(data)
@@ -70,27 +70,27 @@ def test(trlog,ep,min_loss):
 if __name__ == "__main__":
     train_num = 10000
     test_num = 200
-    result_folder = "prediction_model2_formula2"
+    result_folder = "prediction_model_formula3"
     #%%
     EPOCH = 40
     BATCH_SIZE = 512
     lr=0.00005
     os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
     
-    train_folder = os.path.join("dataset", "prediction_result", "train")
-    train_dataset = myDataset(train_folder, train_num, bloodConc, len(bloodConc), len(train_SO2))
+    train_folder = os.path.join("dataset", result_folder, "train")
+    train_dataset = myDataset(train_folder)
     print(f'train dataset size : {len(train_dataset)}')
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-    train_folder = os.path.join("dataset", "prediction_result", "test")
-    test_dataset = myDataset(train_folder, test_num, bloodConc, len(bloodConc), len(test_SO2))
+    train_folder = os.path.join("dataset", result_folder, "test")
+    test_dataset = myDataset(train_folder)
     print(f'test dataset size : {len(test_dataset)}')
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
     torch.save(test_loader, os.path.join("model_save", result_folder, 'test_loader.pth'))
 
     # train model
     start_time = time.time()
-    model = PredictionModel2().cuda()
+    model = PredictionModel3().cuda()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
     trlog = train(model, optimizer, criterion, train_loader, EPOCH, BATCH_SIZE, lr)

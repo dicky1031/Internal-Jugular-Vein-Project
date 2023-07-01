@@ -6,20 +6,29 @@ import numpy as np
 
 
 class myDataset(Dataset):
-    def __init__(self, folder:str, num_of_id:int, bloodConc:list, num_of_blc:int, num_of_SO2:int):
+    def __init__(self, folder:str):
         super().__init__()
         self.folder = folder
-        self.files = glob(os.path.join(self.folder, "*"))
-        self.files = self.files[:num_of_id*num_of_blc]
+        self.files = glob(os.path.join(self.folder, "*.npy"))
         
-        self.x = np.zeros((num_of_id*num_of_blc*num_of_SO2, 40))
-        self.y = np.zeros((num_of_id*num_of_blc*num_of_SO2, 1))
-        self.id = np.zeros((num_of_id*num_of_blc*num_of_SO2, 1))
-        for i, file in enumerate(self.files):
-            data = np.load(file)
-            self.x[i*num_of_SO2:i*num_of_SO2+num_of_SO2] = data[:, :40]
-            self.y[i*num_of_SO2:i*num_of_SO2+num_of_SO2] = data[:, 41].reshape(-1,1)
-            self.id[i*num_of_SO2:i*num_of_SO2+num_of_SO2] = data[:, 42].reshape(-1,1)
+        self.x = []
+        self.y = []
+        self.id = []
+        self.mua_rank = []
+        self.muscle_SO2 = []
+        for file in self.files:
+            datas = np.load(file, allow_pickle=True)
+            for data in datas:
+                self.x.append(data[:800])
+                self.y.append(data[[81]])
+                self.id.append(data[82])
+                self.mua_rank.append(data[83])
+                self.muscle_SO2.append(data[84])
+        self.x = np.array(self.x, dtype=np.float64)
+        self.y = np.array(self.y, dtype=np.float64)
+        self.id = np.array(self.id)
+        self.mua_rank = np.array(self.mua_rank)
+        self.muscle_SO2 = np.array(self.muscle_SO2, dtype=np.float64)
         
         # self.x[:, 80] = (self.x[:, 80] - min(bloodConc)) / (max(bloodConc) - min(bloodConc)) # normalize blc to 0~1
         self.x = torch.from_numpy(self.x)
@@ -29,7 +38,7 @@ class myDataset(Dataset):
     
     def __getitem__(self, index) :
         
-        return self.x[index], self.y[index], self.id[index]
+        return self.x[index], self.y[index], self.id[index], self.mua_rank[index], self.muscle_SO2[index]
     
     def __len__(self):
         

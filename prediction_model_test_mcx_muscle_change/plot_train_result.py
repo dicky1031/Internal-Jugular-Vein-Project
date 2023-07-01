@@ -12,7 +12,10 @@ mpl.rcParams.update(mpl.rcParamsDefault)
 plt.style.use("seaborn-darkgrid")
 os.chdir(sys.path[0])
 # %%
-result_folder = "prediction_model2_formula2"
+result = 'surrogate_formula2'
+test_model_folder = "surrogate_prediction_result_formula2"
+test_data_folder = "prediction_model2_formula2"
+result_folder = "prediction_result_formula2"
 subject = 'ctchen'
 
 def cal_R_square(y_true, y_pred):
@@ -23,13 +26,13 @@ def cal_R_square(y_true, y_pred):
     
     return R_square
 # %%
-os.makedirs(os.path.join("pic", subject, result_folder), exist_ok=True)
+os.makedirs(os.path.join("pic", subject, result, result_folder), exist_ok=True)
 with open(os.path.join("OPs_used", "SO2.json"), 'r') as f:
     SO2 = json.load(f)
     test_SO2 = SO2['test_SO2']
-with open(os.path.join("model_save", subject, result_folder, 'trlog.json'), 'r') as f:
+with open(os.path.join("model_save", subject, test_model_folder, 'trlog.json'), 'r') as f:
     config = json.load(f)
-test_loader = torch.load(os.path.join("model_save", subject, result_folder, 'test_loader.pth'))
+test_loader = torch.load(os.path.join("model_save", subject, test_data_folder, 'test_loader.pth'))
 model = PredictionModel2().cuda()
 model.load_state_dict(torch.load(config['best_model']))
 model.eval()
@@ -57,7 +60,7 @@ max_error = np.max(error)
 plt.title(f"based on SO2=70% \nmean error:{mean:.2f}% std:{std:.2f}% \nmax error:{max_error:.2f}% RMSE:{RMSE:.2f}%")
 plt.xlabel("truth $\u0394$SO2")
 plt.ylabel("predict $\u0394$SO2")
-plt.savefig(os.path.join("pic", subject, result_folder, "RMSE_all_metrics.png"), dpi=300, format='png', bbox_inches='tight')
+plt.savefig(os.path.join("pic", subject, result, result_folder, "RMSE_all_metrics.png"), dpi=300, format='png', bbox_inches='tight')
 plt.close()
 # plt.show()
 
@@ -92,7 +95,7 @@ plt.xlabel("truth $\u0394$SO2(%)")
 plt.ylabel("predict $\u0394$SO2(%)")
 plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5),
           fancybox=True, shadow=True)
-plt.savefig(os.path.join("pic", subject, result_folder, "RMSE.png"), dpi=300, format='png', bbox_inches='tight')
+plt.savefig(os.path.join("pic", subject, result, result_folder, "RMSE.png"), dpi=300, format='png', bbox_inches='tight')
 plt.close()
 # plt.show()
 
@@ -133,7 +136,7 @@ plt.xlabel("truth $\u0394$SO2(%)")
 plt.ylabel("predict $\u0394$SO2(%)")
 plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5),
           fancybox=True, shadow=True)
-plt.savefig(os.path.join("pic", subject, result_folder, "RMSE_fill_plot.png"), dpi=300, format='png', bbox_inches='tight')
+plt.savefig(os.path.join("pic", subject, result, result_folder, "RMSE_fill_plot.png"), dpi=300, format='png', bbox_inches='tight')
 plt.close()
 # plt.show()
 
@@ -161,7 +164,7 @@ plt.xlabel('error(prediction-true)')
 plt.ylabel('count')
 plt.title('error histogram')
 plt.legend()
-plt.savefig(os.path.join("pic", subject, result_folder, "hist.png"), dpi=300, format='png', bbox_inches='tight')
+plt.savefig(os.path.join("pic", subject, result, result_folder, "hist.png"), dpi=300, format='png', bbox_inches='tight')
 plt.close()
 # plt.show()
 
@@ -200,6 +203,6 @@ for key in table.keys():
     plt.ylabel('count')
     plt.title(f'IJV_SO2 = {key}%, RMSE = {RMSE:.2f}%')
     plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5))
-    plt.savefig(os.path.join("pic", subject, result_folder, f"{key}%_hist.png"), dpi=300, format='png', bbox_inches='tight')
+    plt.savefig(os.path.join("pic", subject, result, result_folder, f"{key}%_hist.png"), dpi=300, format='png', bbox_inches='tight')
     plt.close()
     # plt.show()

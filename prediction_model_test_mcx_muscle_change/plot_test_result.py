@@ -52,6 +52,7 @@ mus_types = ['low', 'high', 'medium']
 mua_types = ['all', 'low', 'high', 'medium']
 muscle_types = ['muscle_0', 'muscle_1', 'muscle_3', 'muscle_5', 'muscle_10']
 subject = 'ctchen'
+result = 'surrogate_formula2'
 
 for muscle_type in muscle_types:
     for mus_type in mus_types:
@@ -59,8 +60,8 @@ for muscle_type in muscle_types:
             
             result_folder = os.path.join(f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption")
             # %%
-            os.makedirs(os.path.join("pic", subject, result_folder), exist_ok=True)
-            test_result = pd.read_csv(os.path.join("model_test", subject, result_folder, "test.csv"))
+            os.makedirs(os.path.join("pic", subject, result, result_folder), exist_ok=True)
+            test_result = pd.read_csv(os.path.join("model_test", subject, result, result_folder, "test.csv"))
 
             # %%
             muscle_SO2_dict = {}
@@ -98,7 +99,7 @@ for muscle_type in muscle_types:
             plt.xticks([i for i in range(len(data_y))],data_x)
             plt.xlabel("muscle SO2 change(%)")
             plt.ylabel("error(prediction - true)")
-            plt.savefig(os.path.join("pic", subject, result_folder, f"muscle_change_{muscle_mua_change}_boxplot.png"), dpi=300, format='png', bbox_inches='tight')
+            plt.savefig(os.path.join("pic", subject, result, result_folder, f"muscle_change_{muscle_mua_change}_boxplot.png"), dpi=300, format='png', bbox_inches='tight')
             plt.close()
             # plt.show()
 
@@ -120,7 +121,7 @@ for muscle_type in muscle_types:
                 plt.xlabel("truth $\u0394$SO2")
                 plt.ylabel("predict $\u0394$SO2")
                 plt.legend(loc=(1.01,0.8))
-                plt.savefig(os.path.join("pic", subject, result_folder, f"muscle_change_{muscle_mua_change}_RMSE_ijv.png"), dpi=300, format='png', bbox_inches='tight')
+                plt.savefig(os.path.join("pic", subject, result, result_folder, f"muscle_change_{muscle_mua_change}_RMSE_ijv.png"), dpi=300, format='png', bbox_inches='tight')
                 plt.close()
                 # plt.show()
 

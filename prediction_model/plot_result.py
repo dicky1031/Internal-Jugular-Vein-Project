@@ -1,13 +1,13 @@
 # %%
 import matplotlib.pyplot as plt
-from ANN_models import PredictionModel, PredictionModel2
+from ANN_models import PredictionModel, PredictionModel2, PredictionModel3
 import os 
 import json
 import torch
 import numpy as np
 
 # %%
-result_folder = "prediction_model2_formula2"
+result_folder = "prediction_model_formula3"
 
 # %%
 os.makedirs(os.path.join("pic", result_folder), exist_ok=True)
@@ -17,12 +17,12 @@ with open(os.path.join("OPs_used", "SO2.json"), 'r') as f:
 with open(os.path.join("model_save", result_folder, 'trlog.json'), 'r') as f:
     config = json.load(f)
 test_loader = torch.load(os.path.join("model_save", result_folder, 'test_loader.pth'))
-model = PredictionModel2().cuda()
+model = PredictionModel3().cuda()
 model.load_state_dict(torch.load(config['best_model']))
 model.eval()
 
 # %%
-for batch_idx, (data,target, parameters) in enumerate(test_loader):
+for batch_idx, (data,target, _,_,_) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
     output = output.detach().cpu().numpy()
@@ -47,7 +47,7 @@ plt.savefig(os.path.join("pic", result_folder, "RMSE.png"), dpi=300, format='png
 plt.show()
 
 # %%
-for batch_idx, (data,target, parameters) in enumerate(test_loader):
+for batch_idx, (data,target, _,_,_) in enumerate(test_loader):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
     output = output.detach().cpu().numpy()
@@ -64,8 +64,8 @@ std = np.std(error)
 plt.figure()
 n,bin, pack = plt.hist(error, bins=50)
 plt.vlines([mean+2*std, mean-2*std], 0, max(n), 'r', label='$\mu$$\pm$2*$\sigma$')
-plt.text(mean+2*std-1, max(n)+20, f'{mean+2*std:.2f}%')
-plt.text(mean-2*std-1, max(n)+20, f'{mean-2*std:.2f}%')
+plt.text(mean+2*std, max(n)+20, f'{mean+2*std:.2f}%')
+plt.text(mean-2*std, max(n)+20, f'{mean-2*std:.2f}%')
 plt.xlabel('error(prediction-true)')
 plt.ylabel('count')
 plt.title('error histogram')

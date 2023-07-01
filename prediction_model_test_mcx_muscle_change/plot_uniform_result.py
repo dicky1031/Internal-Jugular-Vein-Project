@@ -5,18 +5,20 @@ import os
 import numpy as np
 import matplotlib as mpl
 from tabulate import tabulate
+import sys
 # Default settings
 mpl.rcParams.update(mpl.rcParamsDefault)
-
+os.chdir(sys.path[0])
 plt.style.use("seaborn-darkgrid")
 
 # %%
 mus_types = ['high', 'medium', 'low']
 mua_types = ['high', 'medium', 'low']
 muscle_types = ['muscle_uniform']
+result = 'surrogate_formula2'
 result_folder = "uniform_result"
 subject = 'ctchen'
-os.makedirs(os.path.join("pic", subject, result_folder), exist_ok=True)
+os.makedirs(os.path.join("pic", subject, result, result_folder), exist_ok=True)
 
 # %%
 def cal_R_square(y_true, y_pred):
@@ -35,10 +37,10 @@ for mus_type in mus_types:
         muscle_row = []
         for idx, muscle_type in enumerate(muscle_types):
             if idx == 0:
-                data = pd.read_csv(os.path.join("model_test", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
+                data = pd.read_csv(os.path.join("model_test", subject, result, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
                 muscle_row.append(np.sqrt(np.mean(np.square(data['error_ijv_SO2'].to_numpy()))))
             else:
-                temp = pd.read_csv(os.path.join("model_test", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
+                temp = pd.read_csv(os.path.join("model_test", subject, result, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
                 muscle_row.append(np.sqrt(np.mean(np.square(temp['error_ijv_SO2'].to_numpy()))))
                 data = pd.concat((data, temp))
         RMSE_error = np.sqrt(np.mean(np.square(data['error_ijv_SO2'].to_numpy())))
@@ -69,7 +71,7 @@ for mus_type in mus_types:
         ax.set_title(f"{mus_type}_mus, {mua_type}_mua")
         count += 1
         for muscle_type in muscle_types:
-            data = pd.read_csv(os.path.join("model_test", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
+            data = pd.read_csv(os.path.join("model_test", subject, result, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
             target_ijv_SO2 = data['target_ijv_SO2'].unique()
             muscle_SO2 = data['muscle_mua_change'].unique()
             
@@ -87,7 +89,7 @@ for mus_type in mus_types:
 plt.legend(loc='center left', bbox_to_anchor=(1.05, 1),
           fancybox=True, shadow=True)
 plt.tight_layout()
-plt.savefig(os.path.join("pic", subject, result_folder, "individual.png"), dpi=300, format='png', bbox_inches='tight')
+plt.savefig(os.path.join("pic", subject, result, result_folder, "individual.png"), dpi=300, format='png', bbox_inches='tight')
 plt.show()
 plt.close()
 
@@ -98,9 +100,9 @@ for muscle_type in muscle_types:
     for mus_type in mus_types:
         for mua_type in mua_types:
             if count == 0:
-                data = pd.read_csv(os.path.join("model_test", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
+                data = pd.read_csv(os.path.join("model_test", subject, result, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
             else:
-                temp = pd.read_csv(os.path.join("model_test", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
+                temp = pd.read_csv(os.path.join("model_test", subject, result, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
                 data = pd.concat((data, temp))
     RMSE = np.sqrt(np.mean(np.square(data['error_ijv_SO2'].to_numpy())))
     y_true = data['target_ijv_SO2'].to_numpy()
@@ -124,9 +126,9 @@ for muscle_type in muscle_types:
     for mus_type in mus_types:
         for mua_type in mua_types:
             if count == 0:
-                data = pd.read_csv(os.path.join("model_test", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
+                data = pd.read_csv(os.path.join("model_test", subject, result, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
             else:
-                temp = pd.read_csv(os.path.join("model_test", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
+                temp = pd.read_csv(os.path.join("model_test", subject, result, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
                 data = pd.concat((data, temp))
             count += 1
     
@@ -143,7 +145,7 @@ plt.xlabel("muscle_SO2_change(%)")
 plt.ylabel("RMSE(%) of the change of IJV SO2")
 plt.legend(loc='center left', bbox_to_anchor=(1, 0.5),
           fancybox=True, shadow=True)
-plt.savefig(os.path.join("pic", subject, result_folder, "all_muscle.png"), dpi=300, format='png', bbox_inches='tight')
+plt.savefig(os.path.join("pic", subject, result, result_folder, "all_muscle.png"), dpi=300, format='png', bbox_inches='tight')
 plt.show()
 plt.close()
 
@@ -154,9 +156,9 @@ for muscle_type in muscle_types:
     for mus_type in mus_types:
         for mua_type in mua_types:
             if count == 0:
-                data = pd.read_csv(os.path.join("model_test", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
+                data = pd.read_csv(os.path.join("model_test", subject, result, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
             else:
-                temp = pd.read_csv(os.path.join("model_test", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
+                temp = pd.read_csv(os.path.join("model_test", subject, result, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
                 data = pd.concat((data, temp))
             count += 1
     
@@ -173,7 +175,7 @@ plt.xlabel("ijv_SO2_change(%)")
 plt.ylabel("RMSE(%)")
 plt.legend(loc='center left', bbox_to_anchor=(1, 0.5),
           fancybox=True, shadow=True)
-plt.savefig(os.path.join("pic", subject, result_folder, "all.png"), dpi=300, format='png', bbox_inches='tight')
+plt.savefig(os.path.join("pic", subject, result, result_folder, "all.png"), dpi=300, format='png', bbox_inches='tight')
 plt.show()
 plt.close()
 

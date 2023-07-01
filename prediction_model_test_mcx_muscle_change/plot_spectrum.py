@@ -23,14 +23,15 @@ muscle_types = ['muscle_0', 'muscle_1', 'muscle_3', 'muscle_5', 'muscle_10'] # w
 short_SDS = 'SDS_1'
 long_SDS = 'SDS_12'
 subject = 'ctchen'
+result = 'surrogate_formula2'
 top_k = 10
 for muscle_type in muscle_types:
     for mus_type in mus_types:
         for mua_type in mua_types:
-            os.makedirs(os.path.join("pic", subject, "delta_OD", muscle_type, mus_type, mua_type, 'top_k_large_error'), exist_ok=True)
-            os.makedirs(os.path.join("pic", subject, "delta_OD", muscle_type, mus_type, mua_type, 'top_k_small_error'), exist_ok=True)
-            os.makedirs(os.path.join("pic", subject, "spectrum", muscle_type, mus_type, mua_type, 'top_k_large_error'), exist_ok=True)
-            os.makedirs(os.path.join("pic", subject, "spectrum", muscle_type, mus_type, mua_type, 'top_k_small_error'), exist_ok=True)
+            os.makedirs(os.path.join("pic", subject, result, "delta_OD", muscle_type, mus_type, mua_type, 'top_k_large_error'), exist_ok=True)
+            os.makedirs(os.path.join("pic", subject, result, "delta_OD", muscle_type, mus_type, mua_type, 'top_k_small_error'), exist_ok=True)
+            os.makedirs(os.path.join("pic", subject, result, "spectrum", muscle_type, mus_type, mua_type, 'top_k_large_error'), exist_ok=True)
+            os.makedirs(os.path.join("pic", subject, result, "spectrum", muscle_type, mus_type, mua_type, 'top_k_small_error'), exist_ok=True)
 
 with open(os.path.join('OPs_used', 'wavelength.json'), 'r') as f:
     wavelength = json.load(f)
@@ -65,7 +66,7 @@ def plot_top_k_large_error_delta_OD(test_result, prediction_input, top_k,  muscl
                 plt.ylabel("$\u0394$OD")
                 plt.title('$\u0394$OD @ $SO2_{ijv}$ :' + f' {now_ijv_SO2:.1f}%,' + '\n$SO2_{muscle}$ :' + f' {now_muscle_SO2:.1f}%, error : {error:.6f}%')
                 plt.tight_layout()
-                plt.savefig(os.path.join("pic", subject, "delta_OD", muscle_type, mus_type, mua_type, 'top_k_large_error',  f"{pic_id}_delta_OD.png"), dpi=300, format='png', bbox_inches='tight')
+                plt.savefig(os.path.join("pic", subject, result, "delta_OD", muscle_type, mus_type, mua_type, 'top_k_large_error',  f"{pic_id}_delta_OD.png"), dpi=300, format='png', bbox_inches='tight')
                 plt.close()
                 # plt.show()
 
@@ -94,7 +95,7 @@ def plot_top_k_small_error_delta_OD(test_result, prediction_input, top_k,  muscl
                 plt.ylabel("$\u0394$OD")
                 plt.title('$\u0394$OD @ $SO2_{ijv}$ :' + f' {now_ijv_SO2:.1f}%,' + '\n$SO2_{muscle}$ :' + f' {now_muscle_SO2:.1f}%, error : {error:.6f}%')
                 plt.tight_layout()
-                plt.savefig(os.path.join("pic", subject, "delta_OD", muscle_type, mus_type, mua_type, 'top_k_small_error',  f"{pic_id}_delta_OD.png"), dpi=300, format='png', bbox_inches='tight')
+                plt.savefig(os.path.join("pic", subject, result, "delta_OD", muscle_type, mus_type, mua_type, 'top_k_small_error',  f"{pic_id}_delta_OD.png"), dpi=300, format='png', bbox_inches='tight')
                 plt.close()
                 # plt.show()
 
@@ -200,7 +201,7 @@ def plot_top_k_large_error_spectrum(test_result, prediction_input, top_k,  muscl
         plt.ylabel("Intensity")
         plt.title('spectrum @ $SO2_{ijv}$ :' + f' {now_ijv_SO2:.1f}%,' + '\n$SO2_{muscle}$ :' + f' {now_muscle_SO2:.1f}%, error : {error:.6f}%')
         plt.tight_layout()
-        plt.savefig(os.path.join("pic", subject, "spectrum", muscle_type, mus_type, mua_type, 'top_k_large_error',  f"{pic_id}_spectrum_short_SDS.png"), dpi=300, format='png', bbox_inches='tight')
+        plt.savefig(os.path.join("pic", subject, result, "spectrum", muscle_type, mus_type, mua_type, 'top_k_large_error',  f"{pic_id}_spectrum_short_SDS.png"), dpi=300, format='png', bbox_inches='tight')
         plt.close()
         # plt.show()
         
@@ -215,7 +216,7 @@ def plot_top_k_large_error_spectrum(test_result, prediction_input, top_k,  muscl
         plt.ylabel("Intensity")
         plt.title('spectrum @ $SO2_{ijv}$ :' + f' {now_ijv_SO2:.1f}%,' + '\n$SO2_{muscle}$ :' + f' {now_muscle_SO2:.1f}%, error : {error:.6f}%')
         plt.tight_layout()
-        plt.savefig(os.path.join("pic", subject, "spectrum", muscle_type, mus_type, mua_type, 'top_k_large_error',  f"{pic_id}_spectrum_long_SDS.png"), dpi=300, format='png', bbox_inches='tight')
+        plt.savefig(os.path.join("pic", subject, result, "spectrum", muscle_type, mus_type, mua_type, 'top_k_large_error',  f"{pic_id}_spectrum_long_SDS.png"), dpi=300, format='png', bbox_inches='tight')
         plt.close()
         # plt.show()
 
@@ -305,7 +306,7 @@ def plot_top_k_small_error_spectrum(test_result, prediction_input, top_k,  muscl
         plt.ylabel("Intensity")
         plt.title('spectrum @ $SO2_{ijv}$ :' + f' {now_ijv_SO2:.1f}%,' + '\n$SO2_{muscle}$ :' + f' {now_muscle_SO2:.1f}%, error : {error:.6f}%')
         plt.tight_layout()
-        plt.savefig(os.path.join("pic", subject, "spectrum", muscle_type, mus_type, mua_type, 'top_k_small_error',  f"{pic_id}_spectrum_short_SDS.png"), dpi=300, format='png', bbox_inches='tight')
+        plt.savefig(os.path.join("pic", subject, result, "spectrum", muscle_type, mus_type, mua_type, 'top_k_small_error',  f"{pic_id}_spectrum_short_SDS.png"), dpi=300, format='png', bbox_inches='tight')
         plt.close()
         # plt.show()
         
@@ -320,7 +321,7 @@ def plot_top_k_small_error_spectrum(test_result, prediction_input, top_k,  muscl
         plt.ylabel("Intensity")
         plt.title('spectrum @ $SO2_{ijv}$ :' + f' {now_ijv_SO2:.1f}%,' + '\n$SO2_{muscle}$ :' + f' {now_muscle_SO2:.1f}%, error : {error:.6f}%')
         plt.tight_layout()
-        plt.savefig(os.path.join("pic", subject, "spectrum", muscle_type, mus_type, mua_type, 'top_k_small_error',  f"{pic_id}_spectrum_long_SDS.png"), dpi=300, format='png', bbox_inches='tight')
+        plt.savefig(os.path.join("pic", subject, result, "spectrum", muscle_type, mus_type, mua_type, 'top_k_small_error',  f"{pic_id}_spectrum_long_SDS.png"), dpi=300, format='png', bbox_inches='tight')
         plt.close()
         # plt.show()
 
@@ -329,7 +330,7 @@ if __name__ == "__main__":
     for muscle_type in muscle_types:
         for mus_type in mus_types:
             for mua_type in mua_types:
-                test_result = pd.read_csv(os.path.join("model_test", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
+                test_result = pd.read_csv(os.path.join("model_test", subject, result, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "test.csv"))
                 prediction_input = pd.read_csv(os.path.join("dataset", subject, f"{mus_type}_scatter_prediction_input_{muscle_type}", f"{mua_type}_absorption", "prediction_input.csv"))
                 print(f"Now processing plot_top_k_large_error_delta_OD... muscle: {muscle_type}, mus : {mus_type}, mua : {mua_type}")
                 plot_top_k_large_error_delta_OD(test_result, prediction_input, top_k,  muscle_type, mus_type, mua_type)
