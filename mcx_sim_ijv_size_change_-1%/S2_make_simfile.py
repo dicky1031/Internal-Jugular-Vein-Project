@@ -10,15 +10,7 @@ os.chdir(sys.path[0])
 #%%
 result_folder = "ctchen"
 subject = "ctchen"
-<<<<<<< HEAD
-<<<<<<< HEAD
 PhotonNum = 1e9
-=======
-PhotonNum = 1e7
->>>>>>> 1a4daf56082303ed9fac0babc8b6baead843a36e
-=======
-PhotonNum = 1e7
->>>>>>> 1a4daf56082303ed9fac0babc8b6baead843a36e
 # %% run
 ijv_types = ['large_to_small', 'small_to_large']
 mus_types = ['high', 'medium', 'low']

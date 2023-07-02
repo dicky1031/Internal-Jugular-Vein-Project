@@ -16,11 +16,7 @@ def calculate_R_CV(sessionID, session, muaPath):
                mua["6: Muscle"],
                mua["7: Muscle or IJV (Perturbed Region)"],
                mua["8: IJV"],
-               mua["9: CCA"],
-               mua["10: Muscle10%"],
-               mua["11: Muscle5%"],
-               mua["12: Muscle3%"],
-               mua["13: Muscle1%"],
+               mua["9: CCA"]
                ]
     mua = np.array(muaUsed)
     with open(os.path.join(sessionID, "config.json")) as f:
