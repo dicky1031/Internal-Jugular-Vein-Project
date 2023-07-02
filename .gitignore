@@ -216,6 +216,8 @@ $RECYCLE.BIN/
 
 
 # avoid upload .jnii .jdat testfile
+RMSE.csv
+similar_analysis.csv
 *.jnii
 *.jdat
 dataset
