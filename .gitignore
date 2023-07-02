@@ -217,10 +217,13 @@ $RECYCLE.BIN/
 
 # avoid upload .jnii .jdat testfile
 <<<<<<< HEAD
+<<<<<<< HEAD
 prediction_model/pic/prediction_result_formula2/RMSE.csv
 prediction_model/pic/prediction_result_formula2/RMSE.csv
 prediction_model/result/ctchen/prediction_result_formula2/similar_analysis.csv
 prediction_model/pic/prediction_model_formula3/RMSE.csv
+=======
+>>>>>>> 1a4daf56082303ed9fac0babc8b6baead843a36e
 =======
 >>>>>>> 1a4daf56082303ed9fac0babc8b6baead843a36e
 RMSE.csv
