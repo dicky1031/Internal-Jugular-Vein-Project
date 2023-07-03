@@ -6,6 +6,7 @@ import json
 import torch
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 import matplotlib as mpl
 # Default settings
 mpl.rcParams.update(mpl.rcParamsDefault)
@@ -32,8 +33,11 @@ def cal_R_square(y_true, y_pred):
     R_square = 1 - numerator/denominator
     
     return R_square
-df = {'predic' : [], 'true' : [] , 'error' : []}
-for batch_idx, (data,target, _, _, _) in enumerate(test_loader):
+df = {'predic' : [], 'true' : [] , 'error' : [], 'abs_error' : []}
+for i in range(800):
+    df[f'data_value_{i}'] = []
+    
+for batch_idx, (data,target, _, _, _) in tqdm(enumerate(test_loader)):
     data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
     output = model(data)
     output = output.detach().cpu().numpy()
@@ -42,8 +46,14 @@ for batch_idx, (data,target, _, _, _) in enumerate(test_loader):
         df['predic'].append(output[idx][0]*100)
         df['true'].append(target[idx][0]*100)
         df['error'].append(100*(output[idx][0] - target[idx][0]))
+        df['abs_error'].append(np.abs(100*(output[idx][0] - target[idx][0])))
+        
+    for row_idx, one_row in enumerate(data):
+        for idx in range(one_row.shape[0]):
+            df[f'data_value_{idx}'] += [one_row[idx].item()]
 
 df = pd.DataFrame(df)
+df = df.sort_values('abs_error', ascending=False)
 df.to_csv(os.path.join("pic", result_folder, "RMSE.csv"), index=False)
         
     
