@@ -49,7 +49,7 @@ class post_processing:
                                       mua_set.shape[0]*[self.prism_mua],
                                       list(mua_set[:, 0]),  # skin mua
                                       list(mua_set[:, 1]),  # fat mua
-                                      list(mua_set[:, 7]),  # musle mua
+                                      list(mua_set[:, 2]),  # musle mua
                                       # perturbed region = musle
                                       list(mua_set[:, 2]),
                                       list(mua_set[:, 3]),  # IJV mua
@@ -65,7 +65,7 @@ class post_processing:
                                       mua_set.shape[0]*[self.prism_mua],
                                       list(mua_set[:, 0]),  # skin mua
                                       list(mua_set[:, 1]),  # fat mua
-                                      list(mua_set[:, 7]),  # musle mua
+                                      list(mua_set[:, 2]),  # musle mua
                                       # perturbed region = IJV mua
                                       list(mua_set[:, 3]),
                                       list(mua_set[:, 3]),  # IJV mua
