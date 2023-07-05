@@ -1,0 +1,27 @@
+浩維:
+exhale @ ijv_small
+ijv_depth = 10.209 mm
+ijv_depth_center = 13.6 mm
+ijv_minor = 1.389 mm
+ijv_major = 6.526 mm
+ijv_area = 21.172 mm^2
+skin_thick = 1.861 mm
+fat_thick = 0.8465 mm
+cca_depth = 20 mm
+cca_radius = 3.709 mm
+
+exhale @ ijv_large
+ijv_depth = 9.797 mm
+ijv_depth_center = 15 mm
+ijv_minor = 2.425 mm 
+ijv_major = 9.293 mm
+ijv_area = 71.344 mm^2
+skin_thick = 1.861 mm
+fat_thick = 0.8465 mm
+cca_depth = 20 mm
+cca_radius = 3.709 mm
+
+left_right_shift = 2.5 mm
+depth_shif = 1 mm
+
+
