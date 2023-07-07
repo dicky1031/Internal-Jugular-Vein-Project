@@ -155,6 +155,7 @@ if __name__ == "__main__":
         wavelength = json.load(f) 
         wavelength = wavelength['wavelength']
     # mus_types = ['high', 'medium', 'low']
+    simulate_condition = "ijv_depth_-0.5mm_size_standard"
     mus_types = ['low']
     result_folder = "ctchen"
     subject = "ctchen"
@@ -165,7 +166,7 @@ if __name__ == "__main__":
         for mus_type in mus_types:
             ID = os.path.join("dataset", result_folder, f"{subject}_ijv_{ijv_type}", mus_type)
             ijv_size = ijv_type.split("_")[0]
-            datasetpath = f"{subject}_dataset_{ijv_size}_muscle"
+            datasetpath = f"{subject}_dataset_{ijv_size}_{simulate_condition}"
             os.makedirs(os.path.join("dataset", result_folder,
                         datasetpath, mus_type), exist_ok=True)
 
