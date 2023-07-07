@@ -1,0 +1,19 @@
+{
+
+    "SessionID": "large_ijv_mus_baseline",
+    "Type": "ijv",
+
+    "PhotonNum": 1e8,
+    "VoxelSize": 0.25,
+
+    "BinaryPath": "/media/md703/WD_BLACK/SCS/KB_IJV",
+    
+    "VolumePath": "/media/md703/WD_BLACK/SCS/KB_IJV/ultrasound_image_processing/kb_perturbed_small_to_large.npy",
+    "MCXInputPath": "/home/md703/Documents/SCS/pymcx/ijv_2-master/ijv_2-master/SCS_ijv/ctchen_ijv_small_to_large/ijv_dense_symmetric_detectors_backgroundfiber_pmc.json",
+    "OutputPath": "/home/md703/Documents/SCS/pymcx/ijv_2-master/ijv_2-master/SCS_ijv",
+    
+    "DetectorNA": 0.22,
+    
+    "CustomizedCommands": ["--savedetflag DSPXV --seed -1 --outputformat jnii"]
+
+}
