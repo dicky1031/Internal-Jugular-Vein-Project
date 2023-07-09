@@ -230,9 +230,11 @@ RMSE.csv
 similar_analysis.csv
 *.jnii
 *.jdat
-dataset
-model_save
-bin
+*.pth
+dataset/
+model_test/
+model_save/
+bin/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,windows,git
 prediction_model/pic/prediction_model_formula3/RMSE.csv

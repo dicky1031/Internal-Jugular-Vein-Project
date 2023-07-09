@@ -151,23 +151,23 @@ if __name__ == "__main__":
     repeatTimes = 10
     
     for ijv_type in ijv_types:
-        # run_mcx(result_folder=result_folder, 
-        #         mus_type='high', 
-        #         subject=subject, mus_start=mus_start, mus_end=mus_end, 
-        #         NA_enable=NA_enable, NA=NA,
-        #         runningNum=runningNum, cvThreshold=cvThreshold, 
-        #         repeatTimes=repeatTimes, ijv_type=ijv_type)
-        # run_mcx(result_folder=result_folder, 
-        #         mus_type='medium', 
-        #         subject=subject, mus_start=mus_start, mus_end=mus_end, 
-        #         NA_enable=NA_enable, NA=NA,
-        #         runningNum=runningNum, cvThreshold=cvThreshold, 
-        #         repeatTimes=repeatTimes, ijv_type=ijv_type)
         run_mcx(result_folder=result_folder, 
-                mus_type='low', 
+                mus_type='high', 
                 subject=subject, mus_start=mus_start, mus_end=mus_end, 
                 NA_enable=NA_enable, NA=NA,
                 runningNum=runningNum, cvThreshold=cvThreshold, 
                 repeatTimes=repeatTimes, ijv_type=ijv_type)
+        run_mcx(result_folder=result_folder, 
+                mus_type='medium', 
+                subject=subject, mus_start=mus_start, mus_end=mus_end, 
+                NA_enable=NA_enable, NA=NA,
+                runningNum=runningNum, cvThreshold=cvThreshold, 
+                repeatTimes=repeatTimes, ijv_type=ijv_type)
+        # run_mcx(result_folder=result_folder, 
+        #         mus_type='low', 
+        #         subject=subject, mus_start=mus_start, mus_end=mus_end, 
+        #         NA_enable=NA_enable, NA=NA,
+        #         runningNum=runningNum, cvThreshold=cvThreshold, 
+        #         repeatTimes=repeatTimes, ijv_type=ijv_type)
 
 

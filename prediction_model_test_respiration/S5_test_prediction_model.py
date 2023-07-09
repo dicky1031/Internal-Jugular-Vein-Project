@@ -25,7 +25,7 @@ with open(os.path.join('OPs_used', "muscle_SO2.json"), 'r') as f:
 #%% Test Model
 def test(model, test_loader):
     model.eval()
-    for batch_idx, (data, target, id, mua_rank, muscle_mua_change) in enumerate(test_loader):
+    for batch_idx, (data, target, id, mua_rank) in enumerate(test_loader):
         data,target = data.to(torch.float32).cuda(), target.to(torch.float32).cuda()
         output = model(data)
         output = output.detach().cpu().numpy()

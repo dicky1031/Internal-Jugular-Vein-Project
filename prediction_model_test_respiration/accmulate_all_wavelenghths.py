@@ -26,10 +26,10 @@ with open(os.path.join('OPs_used', "muscle_SO2.json"), 'r') as f:
     muscle_SO2 = muscle_SO2['SO2']
     
 # %%
-# ijv_depth = ['+1mm', '+0.5mm', '-0.5mm', '-1mm', 'standard']
-ijv_depth = ['standard']
+ijv_depth = ['+1mm', '+0.5mm', '-0.5mm', '-1mm', 'standard']
+# ijv_depth = ['standard']
 # ijv_size = ['-50%', '-30%', '-20%', '-10%', 'standard']
-ijv_size = ['-10%']
+ijv_size = ['standard']
 # mus_types = ['low', 'medium', 'high']
 mus_types = ['low']
 subject = 'ctchen'    

@@ -67,10 +67,10 @@ def gen_precition_input(wl2_idx, wl_idx, all_dataset_large, all_dataset_small, b
 #             count += 1
 #     return data
 # %%
-# ijv_depth = ['+1mm', '+0.5mm', '-0.5mm', '-1mm', 'standard']
-ijv_depth = ['standard']
+ijv_depth = ['+1mm', '+0.5mm', '-0.5mm', '-1mm', 'standard']
+# ijv_depth = ['standard']
 # ijv_size = ['-50%', '-30%', '-20%', '-10%', 'standard']
-ijv_size = ['-10%']
+ijv_size = ['standard']
 # mus_types = ['low', 'medium', 'high']
 mus_types = ['low']
 subject = 'ctchen'
