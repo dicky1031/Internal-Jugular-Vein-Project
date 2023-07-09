@@ -19,11 +19,11 @@ class myDataset(Dataset):
         for file in self.files:
             datas = np.load(file, allow_pickle=True)
             for data in datas:
-                self.x.append(data[:800])
-                self.y.append(data[[801]])
-                self.id.append(data[802])
-                self.mua_rank.append(data[803])
-                self.muscle_SO2.append(data[804])
+                self.x.append(data[:400])
+                self.y.append(data[[401]])
+                self.id.append(data[402])
+                self.mua_rank.append(data[403])
+                self.muscle_SO2.append(data[404])
         self.x = np.array(self.x, dtype=np.float64)
         self.y = np.array(self.y, dtype=np.float64)
         self.id = np.array(self.id)

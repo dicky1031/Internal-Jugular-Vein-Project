@@ -56,10 +56,10 @@ def test(model, test_loader):
 
 if __name__ == "__main__":
     #%% load pre-trained model
-    pretrained_model_folder = "prediction_model_formula3"
+    pretrained_model_folder = "prediction_model_formula3_train_on_mcx_again"
     BATCH_SIZE = 512
     subject = 'ctchen'
-    result = 'surrogate_formula3'
+    result = 'surrogate_formula3_train_on_mcx_again'
     
     # load result
     with open(os.path.join("model_save", subject, pretrained_model_folder, "trlog.json"), 'r') as f:
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     # ijv_depth = ['+1mm', '+0.5mm', '-0.5mm', '-1mm', 'standard']
     ijv_depth = ['standard']
     ijv_size = ['-50%', '-30%', '-20%', '-10%', 'standard']
-    # ijv_size = ['-10%']
+    # ijv_size = ['standard']
     
     for using_depth in ijv_depth:
         for using_size in ijv_size:

@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from ANN_models import PredictionModel, PredictionModel2, PredictionModel3
+from ANN_models import PredictionModel, PredictionModel2, PredictionModel3, PredictionModel4
 from myDataset import myDataset
 import time
 import json
@@ -70,7 +70,7 @@ def test(trlog,ep,min_loss):
 if __name__ == "__main__":
     train_num = 10000
     test_num = 200
-    result_folder = "prediction_model_formula3"
+    result_folder = "prediction_model_formula4"
     #%%
     EPOCH = 40
     BATCH_SIZE = 512
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     # train model
     start_time = time.time()
-    model = PredictionModel3().cuda()
+    model = PredictionModel4().cuda()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
     trlog = train(model, optimizer, criterion, train_loader, EPOCH, BATCH_SIZE, lr)
