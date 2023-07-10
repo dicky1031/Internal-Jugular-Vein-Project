@@ -1,6 +1,6 @@
 # %%
 import matplotlib.pyplot as plt
-from ANN_models import PredictionModel, PredictionModel2, PredictionModel3
+from ANN_models import PredictionModel, PredictionModel2, PredictionModel3, PredictionModel4
 import os 
 import json
 import torch
@@ -12,7 +12,7 @@ import matplotlib as mpl
 mpl.rcParams.update(mpl.rcParamsDefault)
 plt.style.use("seaborn-darkgrid")
 # %%
-result_folder = "prediction_model_formula3"
+result_folder = "prediction_model_formula4"
 
 # %%
 os.makedirs(os.path.join("pic", result_folder), exist_ok=True)
@@ -22,7 +22,7 @@ with open(os.path.join("OPs_used", "SO2.json"), 'r') as f:
 with open(os.path.join("model_save", result_folder, 'trlog.json'), 'r') as f:
     config = json.load(f)
 test_loader = torch.load(os.path.join("model_save", result_folder, 'test_loader.pth'))
-model = PredictionModel3().cuda()
+model = PredictionModel4().cuda()
 model.load_state_dict(torch.load(config['best_model']))
 model.eval()
 
