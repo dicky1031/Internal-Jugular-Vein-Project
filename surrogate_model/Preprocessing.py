@@ -17,7 +17,7 @@ class dataload(Dataset):
         min_mua = np.min(self.mua_set, axis=0)[:5]
         self.x_min = torch.from_numpy(np.concatenate((min_mus,min_mua)))
         self.x = (self.x - self.x_min) / (self.x_max - self.x_min)
-        self.y = torch.from_numpy(xy[:,[SDS1+9,SDS2+9]]) # SDS2:10.00mm  SDS16: 20.00mm
+        self.y = torch.from_numpy(xy[:,[SDS1+10,SDS2+10]]) # SDS2:10.00mm  SDS16: 20.00mm
         self.y = -torch.log(self.y)
         self.n_samples = xy.shape[0]
                 

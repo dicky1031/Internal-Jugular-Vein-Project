@@ -32,7 +32,7 @@ def gen_dataset(subject, ijv_size):
 
 if __name__ == "__main__":
     os.makedirs("dataset", exist_ok=True)
-    subject = 'ctchen'
+    subject = 'kb'
     
     ijv_sizes = ['large', 'small']
     for ijv_size in ijv_sizes:

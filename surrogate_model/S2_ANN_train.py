@@ -63,38 +63,41 @@ def test(trlog,ep,min_loss):
     
 #%%   
 if __name__ == "__main__":
-    subject = 'ctchen'
-    result_folder = f"{subject}_large"
-    dataset = f"{subject}_large_dataset.npy"
-    epoch = 2
-    batch_size = 128
-    test_split = 0.2
-    lr = 0.001
-    SDS1 = 2 
-    SDS2 = 16
-    
-    #%% Run Training
-    os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
-    root = os.path.join("dataset",dataset)
-    mus_set_path = os.path.join("OPs_used", "mus_set.npy")
-    mua_set_path = os.path.join("OPs_used", "mua_set.npy")
-    # need shuffle or not
-    shuffle_dataset = True
-    # random seed of shuffle 
-    random_seed = 703
-    dataset = dataload(root,mus_set_path,mua_set_path, SDS1, SDS2)
-    train_loader, test_loader = data_preprocess(dataset, batch_size, test_split, shuffle_dataset, random_seed)
-    # train model
-    model = ANN().cuda()
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    criterion = nn.MSELoss()
-    
-    trlog = train(model, optimizer, criterion, train_loader, epoch, batch_size, lr)
-    with open(os.path.join("model_save", result_folder, "trlog.json"), 'w') as f:
-        json.dump(trlog, f, indent=4)
-    torch.save(train_loader, os.path.join("model_save", result_folder, "train_loader.pth"))
-    torch.save(test_loader, os.path.join("model_save", result_folder, "test_loader.pth"))
-    
+    subject = 'kb'
+    result_folder_set = [f"{subject}_large", f"{subject}_small"]
+    dataset_set = [f"{subject}_large_dataset.npy", f"{subject}_small_dataset.npy"]
+    for i in range(len(result_folder_set)):
+        result_folder = result_folder_set[i]
+        dataset = dataset_set[i]
+        epoch = 2
+        batch_size = 128
+        test_split = 0.2
+        lr = 0.001
+        SDS1 = 1 
+        SDS2 = 12
+        
+        #%% Run Training
+        os.makedirs(os.path.join("model_save", result_folder), exist_ok=True)
+        root = os.path.join("dataset",dataset)
+        mus_set_path = os.path.join("OPs_used", "mus_set.npy")
+        mua_set_path = os.path.join("OPs_used", "mua_set.npy")
+        # need shuffle or not
+        shuffle_dataset = True
+        # random seed of shuffle 
+        random_seed = 703
+        dataset = dataload(root,mus_set_path,mua_set_path, SDS1, SDS2)
+        train_loader, test_loader = data_preprocess(dataset, batch_size, test_split, shuffle_dataset, random_seed)
+        # train model
+        model = ANN().cuda()
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+        criterion = nn.MSELoss()
+        
+        trlog = train(model, optimizer, criterion, train_loader, epoch, batch_size, lr)
+        with open(os.path.join("model_save", result_folder, "trlog.json"), 'w') as f:
+            json.dump(trlog, f, indent=4)
+        torch.save(train_loader, os.path.join("model_save", result_folder, "train_loader.pth"))
+        torch.save(test_loader, os.path.join("model_save", result_folder, "test_loader.pth"))
+        
     
         
     
